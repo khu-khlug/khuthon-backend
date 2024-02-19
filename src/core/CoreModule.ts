@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { configuration } from './config';
 import { DatabaseConfig } from './config/DatabaseConfig';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import { DataSource } from 'typeorm';
+import { SmsSender } from './sms/SmsSender';
 
 @Module({
   imports: [
@@ -14,6 +17,10 @@ import { DatabaseConfig } from './config/DatabaseConfig';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const config = configService.get<DatabaseConfig>('database');
+        if (!config) {
+          throw new Error('Database configuration is not found');
+        }
+
         return {
           type: 'mysql',
           host: config.host,
@@ -24,7 +31,16 @@ import { DatabaseConfig } from './config/DatabaseConfig';
         };
       },
       inject: [ConfigService],
+      dataSourceFactory: async (option) => {
+        if (!option) {
+          throw new Error('Database configuration is not found');
+        }
+
+        return addTransactionalDataSource(new DataSource(option));
+      },
     }),
   ],
+  providers: [SmsSender],
+  exports: [SmsSender],
 })
 export class CoreModule {}
