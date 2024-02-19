@@ -1,4 +1,4 @@
-import { generateDatabaseConfig } from './database.config';
+import { generateDatabaseConfig } from './DatabaseConfig';
 
 export const configuration = () => ({
   database: generateDatabaseConfig(),
