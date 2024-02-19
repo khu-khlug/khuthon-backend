@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 
+import { CoreModule } from './core/core.module';
+import { KhuthonModule } from './khuthon/khuthon.module';
+
 @Module({
-  imports: [],
+  imports: [CoreModule, KhuthonModule],
   controllers: [],
   providers: [],
 })
