@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from '@khlug/app.module';
-import { initializeTransactionalContext } from 'typeorm-transactional';
 
 async function bootstrap() {
   initializeTransactionalContext();

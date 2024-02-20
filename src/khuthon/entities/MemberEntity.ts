@@ -1,4 +1,3 @@
-import { MemberState } from '@khlug/constant';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +5,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { MemberState } from '@khlug/constant';
 
 @Entity('Member')
 export class MemberEntity {

@@ -1,4 +1,3 @@
-import { TeamState } from '@khlug/constant';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +5,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { TeamState } from '@khlug/constant';
 
 @Entity('Team')
 export class TeamEntity {
