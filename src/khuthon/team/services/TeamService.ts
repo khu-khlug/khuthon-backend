@@ -17,7 +17,7 @@ type RegisterTeamParams = {
     note: string;
   };
   member: {
-    studentNumber: number;
+    studentNumber: string;
     name: string;
     university: string;
     college: string;

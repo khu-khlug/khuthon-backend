@@ -15,8 +15,24 @@ export class TeamController {
   async registerTeam(
     @Body() requestDto: RegisterTeamRequestDto,
   ): Promise<RegisterTeamResponseDto> {
-    const {} = requestDto;
+    const { member: memberParams, team: teamParams } = requestDto;
 
-    return {};
+    const team = await this.teamService.registerTeam({
+      member: {
+        studentNumber: memberParams.studentNumber,
+        name: memberParams.name,
+        university: memberParams.university,
+        college: memberParams.college,
+        grade: memberParams.grade,
+        phone: memberParams.phone,
+        email: memberParams.email,
+      },
+      team: {
+        name: teamParams.name,
+        note: teamParams.note,
+      },
+    });
+
+    return new RegisterTeamResponseDto(team);
   }
 }

@@ -19,8 +19,8 @@ export class MemberEntity {
   @Column('varchar', { length: 100 })
   teamId!: string;
 
-  @Column('int', { name: 'number' })
-  studentNumber!: number;
+  @Column('varchar', { length: 15 })
+  studentNumber!: string;
 
   @Column('varchar', { length: 50 })
   name!: string;
