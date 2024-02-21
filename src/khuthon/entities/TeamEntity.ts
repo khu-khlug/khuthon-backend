@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { TeamState } from '@khlug/constant';
+
+import { MemberEntity } from './MemberEntity';
 
 @Entity('Team')
 export class TeamEntity {
@@ -33,4 +36,10 @@ export class TeamEntity {
 
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
+
+  @OneToMany(() => MemberEntity, (member) => member.team, {
+    cascade: true,
+    eager: true,
+  })
+  members!: MemberEntity[];
 }

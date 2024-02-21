@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
+import { EditTeamRequestDto } from './dto/EditTeamRequestDto';
+import { EditTeamResponseDto } from './dto/EditTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/RegisterTeamRequestDto';
 import { RegisterTeamResponseDto } from './dto/RegisterTeamResponseDto';
 
@@ -34,5 +36,22 @@ export class TeamController {
     });
 
     return new RegisterTeamResponseDto(team);
+  }
+
+  @Patch('/teams/:teamId')
+  @Transactional()
+  async editTeam(
+    @Param('teamId') teamId: string,
+    @Body() requestDto: EditTeamRequestDto,
+  ): Promise<EditTeamResponseDto> {
+    const { numbers, name, note } = requestDto;
+
+    const team = await this.teamService.editTeam(teamId, {
+      numbers,
+      name,
+      note,
+    });
+
+    return new EditTeamResponseDto(team.id);
   }
 }

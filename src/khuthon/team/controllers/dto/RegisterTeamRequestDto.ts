@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsNumber,
   IsNumberString,
   IsString,
@@ -10,6 +11,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+
+import { University } from '@khlug/constant';
 
 export class RegisterTeamRequestTeam {
   @IsString()
@@ -30,9 +33,8 @@ export class RegisterTeamRequestMember {
   @Length(1, 40)
   name!: string;
 
-  @IsString()
-  @Length(1, 50)
-  university!: string;
+  @IsEnum(University)
+  university!: University;
 
   @IsString()
   @Length(1, 150)

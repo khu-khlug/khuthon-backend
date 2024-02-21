@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { MemberState } from '@khlug/constant';
+import { MemberState, University } from '@khlug/constant';
+import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 
 @Entity('Member')
 export class MemberEntity {
@@ -22,23 +24,23 @@ export class MemberEntity {
   @Column('varchar', { length: 15 })
   studentNumber!: string;
 
-  @Column('varchar', { length: 50 })
-  name!: string;
+  @Column('varchar', { length: 50, nullable: true })
+  name!: string | null;
 
-  @Column('varchar', { length: 60 })
-  university!: string;
+  @Column('varchar', { length: 60, nullable: true })
+  university!: University | null;
 
-  @Column('varchar', { length: 160 })
-  college!: string;
+  @Column('varchar', { length: 160, nullable: true })
+  college!: string | null;
 
-  @Column('int')
-  grade!: number;
+  @Column('int', { nullable: true })
+  grade!: number | null;
 
-  @Column('varchar', { length: 20 })
-  phone!: string;
+  @Column('varchar', { length: 20, nullable: true })
+  phone!: string | null;
 
-  @Column('varchar', { length: 50 })
-  email!: string;
+  @Column('varchar', { length: 50, nullable: true })
+  email!: string | null;
 
   @Column('varchar', { length: 30 })
   state!: MemberState;
@@ -48,4 +50,10 @@ export class MemberEntity {
 
   @UpdateDateColumn({ type: 'datetime' })
   updatedAt!: Date;
+
+  @ManyToOne(() => TeamEntity, (team) => team.members, {
+    orphanedRowAction: 'delete',
+    onDelete: 'CASCADE',
+  })
+  team!: TeamEntity;
 }
