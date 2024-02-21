@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
@@ -53,5 +53,12 @@ export class TeamController {
     });
 
     return new EditTeamResponseDto(team.id);
+  }
+
+  @Delete('/teams/:teamId')
+  @Transactional()
+  async leaveTeam(@Param('teamId') teamId: string): Promise<void> {
+    // TODO[lery]: 인가 계층 구현 후 수정 필요
+    await this.teamService.leaveTeam(teamId, 'memberId');
   }
 }

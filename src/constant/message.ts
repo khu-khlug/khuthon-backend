@@ -1,4 +1,7 @@
 export const Message = {
+  // 403 Forbidden
+  ONLY_MEMBERS_CAN_WITHDRAW: '팀원만 팀의 참가 신청을 철회할 수 있습니다.',
+
   // 404 Not found
   NO_REGISTERING_EVENT: '접수 중인 행사가 없습니다.',
   TEAM_NOT_FOUND: '해당되는 팀이 없습니다.',

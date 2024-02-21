@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -189,6 +190,33 @@ export class TeamService {
     await this.teamRepository.save(team);
 
     return team;
+  }
+
+  async leaveTeam(teamId: string, memberId: string): Promise<void> {
+    await this.checkRegisteringEventExists();
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = team.members.find((member) => member.id === memberId);
+    if (!member) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_WITHDRAW);
+    }
+
+    const smsTargetPhoneNumbers = team.members
+      .map((member) => member.phone)
+      .filter((phone): phone is string => !!phone);
+
+    for (const phone of smsTargetPhoneNumbers) {
+      await this.smsSender.send(
+        phone,
+        `[khuthon] ${team.name} 팀의 참가 신청이 철회되었습니다.`,
+      );
+    }
+
+    await this.logger.log(`${team.name} 팀의 참가 신청이 철회되었습니다.`);
   }
 
   private async checkRegisteringEventExists(): Promise<void> {
