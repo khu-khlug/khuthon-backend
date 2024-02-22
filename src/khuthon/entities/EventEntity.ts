@@ -58,4 +58,8 @@ export class EventEntity {
     const now = new Date();
     return this.judgeStartAt <= now && now <= this.judgeEndAt;
   }
+
+  isOngoing(): boolean {
+    return this.isEventing() && !this.isJudging();
+  }
 }

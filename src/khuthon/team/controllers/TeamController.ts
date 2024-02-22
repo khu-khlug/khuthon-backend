@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
@@ -7,6 +15,7 @@ import { EditTeamRequestDto } from './dto/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/EditTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/RegisterTeamRequestDto';
 import { RegisterTeamResponseDto } from './dto/RegisterTeamResponseDto';
+import { UpdateTeamIdeaRequestDto } from './dto/UpdateTeamIdeaRequestDto';
 
 @Controller()
 export class TeamController {
@@ -60,5 +69,17 @@ export class TeamController {
   async leaveTeam(@Param('teamId') teamId: string): Promise<void> {
     // TODO[lery]: 인가 계층 구현 후 수정 필요
     await this.teamService.leaveTeam(teamId, 'memberId');
+  }
+
+  @Put('/teams/:teamId/ideas')
+  @Transactional()
+  async updateTeamIdea(
+    @Param('teamId') teamId: string,
+    @Body() requestDto: UpdateTeamIdeaRequestDto,
+  ): Promise<void> {
+    const { idea } = requestDto;
+
+    // TODO[lery]: 인가 계층 구현 후 수정 필요
+    await this.teamService.updateTeamIdea('memberId', teamId, idea);
   }
 }

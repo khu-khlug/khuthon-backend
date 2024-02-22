@@ -55,10 +55,9 @@ export class TeamService {
 
   async registerTeam(params: RegisterTeamParams): Promise<TeamEntity> {
     const year = new Date().getFullYear();
-    await this.checkRegisteringEventExists();
 
-    const event = await this.eventRepository.findOneBy({ year });
-    if (!event || !event.isRegistering()) {
+    const event = await this.getThisYearEvent();
+    if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
 
@@ -134,7 +133,10 @@ export class TeamService {
   }
 
   async editTeam(teamId: string, params: EditTeamParams): Promise<TeamEntity> {
-    await this.checkRegisteringEventExists();
+    const event = await this.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
 
     const team = await this.teamRepository.findOneBy({ id: teamId });
     if (!team) {
@@ -193,7 +195,10 @@ export class TeamService {
   }
 
   async leaveTeam(teamId: string, memberId: string): Promise<void> {
-    await this.checkRegisteringEventExists();
+    const event = await this.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
 
     const team = await this.teamRepository.findOneBy({ id: teamId });
     if (!team) {
@@ -219,12 +224,42 @@ export class TeamService {
     await this.logger.log(`${team.name} 팀의 참가 신청이 철회되었습니다.`);
   }
 
-  private async checkRegisteringEventExists(): Promise<void> {
+  async updateTeamIdea(
+    memberId: string,
+    teamId: string,
+    idea: string,
+  ): Promise<void> {
+    const event = await this.getThisYearEvent();
+    if (!event.isOngoing()) {
+      throw new NotFoundException(Message.CANNOT_EDIT_NOW);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = team.members.find((member) => member.id === memberId);
+    if (!member) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM_IDEA);
+    }
+
+    team.idea = idea;
+    await this.teamRepository.save(team);
+
+    await this.logger.log(
+      `${team.name} 팀에서 주제를 ${team.idea}로 지정했습니다.`,
+    );
+  }
+
+  private async getThisYearEvent(): Promise<EventEntity> {
     const year = new Date().getFullYear();
 
     const event = await this.eventRepository.findOneBy({ year });
-    if (!event || !event.isRegistering()) {
-      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    if (!event) {
+      throw new NotFoundException(Message.EVENT_NOT_FOUND_ON_THIS_YEAR);
     }
+
+    return event;
   }
 }
