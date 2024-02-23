@@ -13,6 +13,7 @@ import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
 import { EditTeamRequestDto } from './dto/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/EditTeamResponseDto';
+import { IssueAttachmentPresignedPostResponseDto } from './dto/IssueAttachmentPresignedPostResponseDto';
 import { RegisterTeamRequestDto } from './dto/RegisterTeamRequestDto';
 import { RegisterTeamResponseDto } from './dto/RegisterTeamResponseDto';
 import { UpdateTeamIdeaRequestDto } from './dto/UpdateTeamIdeaRequestDto';
@@ -81,5 +82,15 @@ export class TeamController {
 
     // TODO[lery]: 인가 계층 구현 후 수정 필요
     await this.teamService.updateTeamIdea('memberId', teamId, idea);
+  }
+
+  @Post('/teams/:teamId/attachments')
+  @Transactional()
+  async issueAttachmentPresignedPost(
+    @Param('teamId') teamId: string,
+  ): Promise<IssueAttachmentPresignedPostResponseDto> {
+    const presignedPost =
+      await this.teamService.issueAttachmentUploadUrl(teamId);
+    return presignedPost;
   }
 }

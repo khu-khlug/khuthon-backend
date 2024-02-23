@@ -15,4 +15,5 @@ export const Message = {
   ALREADY_EXIST_TEAM_NAME: '이미 존재하는 팀 이름입니다.',
   INVALID_MEMBER_COUNT: '참가자 수는 1명에서 4명까지입니다.',
   CANNOT_EDIT_NOW: '수정 가능한 시기가 아닙니다.',
+  CANNOT_SUBMIT_ATTACHMENT_NOW: '제출 가능한 시기가 아닙니다.',
 } as const;

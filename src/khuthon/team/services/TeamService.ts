@@ -1,3 +1,4 @@
+import { PresignedPost } from '@aws-sdk/s3-presigned-post';
 import {
   ForbiddenException,
   Injectable,
@@ -14,6 +15,7 @@ import { EventEntity } from '@khlug/khuthon/entities/EventEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
+import { S3Adapter } from '@khlug/khuthon/s3/S3Adapter';
 import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
 import { isSameStringArray } from '@khlug/util';
 
@@ -51,6 +53,7 @@ export class TeamService {
 
     private readonly smsSender: SmsSender,
     private readonly logger: KhuthonLogger,
+    private readonly s3Adapter: S3Adapter,
   ) {}
 
   async registerTeam(params: RegisterTeamParams): Promise<TeamEntity> {
@@ -250,6 +253,24 @@ export class TeamService {
     await this.logger.log(
       `${team.name} 팀에서 주제를 ${team.idea}로 지정했습니다.`,
     );
+  }
+
+  async issueAttachmentUploadUrl(teamId: string): Promise<PresignedPost> {
+    const event = await this.getThisYearEvent();
+    if (!event.isOngoing()) {
+      throw new UnprocessableEntityException(
+        Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
+      );
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const fileKey = `attachments/${team.id}/${ulid()}.pdf`;
+    const presignedPost = await this.s3Adapter.getPresignedPost(fileKey);
+    return presignedPost;
   }
 
   private async getThisYearEvent(): Promise<EventEntity> {
