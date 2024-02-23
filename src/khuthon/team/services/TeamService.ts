@@ -11,10 +11,10 @@ import { ulid } from 'ulid';
 
 import { MemberState, TeamState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
-import { EventEntity } from '@khlug/khuthon/entities/EventEntity';
 import { FileEntity } from '@khlug/khuthon/entities/FileEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
+import { EventService } from '@khlug/khuthon/event/services/EventService';
 import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
 import { S3Adapter } from '@khlug/khuthon/s3/S3Adapter';
 import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
@@ -45,8 +45,6 @@ type EditTeamParams = {
 @Injectable()
 export class TeamService {
   constructor(
-    @InjectRepository(EventEntity)
-    private readonly eventRepository: Repository<EventEntity>,
     @InjectRepository(TeamEntity)
     private readonly teamRepository: Repository<TeamEntity>,
     @InjectRepository(MemberEntity)
@@ -57,12 +55,13 @@ export class TeamService {
     private readonly smsSender: SmsSender,
     private readonly logger: KhuthonLogger,
     private readonly s3Adapter: S3Adapter,
+    private readonly eventService: EventService,
   ) {}
 
   async registerTeam(params: RegisterTeamParams): Promise<TeamEntity> {
     const year = new Date().getFullYear();
 
-    const event = await this.getThisYearEvent();
+    const event = await this.eventService.getThisYearEvent();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -139,7 +138,7 @@ export class TeamService {
   }
 
   async editTeam(teamId: string, params: EditTeamParams): Promise<TeamEntity> {
-    const event = await this.getThisYearEvent();
+    const event = await this.eventService.getThisYearEvent();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -201,7 +200,7 @@ export class TeamService {
   }
 
   async leaveTeam(teamId: string, memberId: string): Promise<void> {
-    const event = await this.getThisYearEvent();
+    const event = await this.eventService.getThisYearEvent();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -235,7 +234,7 @@ export class TeamService {
     teamId: string,
     idea: string,
   ): Promise<void> {
-    const event = await this.getThisYearEvent();
+    const event = await this.eventService.getThisYearEvent();
     if (!event.isOngoing()) {
       throw new NotFoundException(Message.CANNOT_EDIT_NOW);
     }
@@ -258,8 +257,10 @@ export class TeamService {
     );
   }
 
-  async issueAttachmentUploadUrl(teamId: string): Promise<PresignedPost> {
-    const event = await this.getThisYearEvent();
+  async issueAttachmentUploadUrl(
+    teamId: string,
+  ): Promise<{ fileId: string } & PresignedPost> {
+    const event = await this.eventService.getThisYearEvent();
     if (!event.isOngoing()) {
       throw new UnprocessableEntityException(
         Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
@@ -281,17 +282,36 @@ export class TeamService {
     });
     await this.fileRepository.save(newFile);
 
-    return presignedPost;
+    await this.logger.log(`${team.name} 팀에서 자료를 제출했습니다.`);
+
+    return { fileId: newFile.id, ...presignedPost };
   }
 
-  private async getThisYearEvent(): Promise<EventEntity> {
-    const year = new Date().getFullYear();
-
-    const event = await this.eventRepository.findOneBy({ year });
-    if (!event) {
-      throw new NotFoundException(Message.EVENT_NOT_FOUND_ON_THIS_YEAR);
+  async deleteAttachment(teamId: string, fileId: string): Promise<void> {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isOngoing()) {
+      throw new UnprocessableEntityException(
+        Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
+      );
     }
 
-    return event;
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const file = await this.fileRepository.findOneBy({ id: fileId });
+    if (!file) {
+      throw new NotFoundException(Message.FILE_NOT_FOUND);
+    }
+
+    if (file.teamId !== team.id) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_DELETE_ATTACHMENT);
+    }
+
+    await this.s3Adapter.deleteObject(file.fileKey);
+    await this.fileRepository.delete(file.id);
+
+    await this.logger.log(`${team.name} 팀에서 자료를 삭제했습니다.`);
   }
 }

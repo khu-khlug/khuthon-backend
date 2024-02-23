@@ -54,6 +54,7 @@ export class TeamController {
     @Param('teamId') teamId: string,
     @Body() requestDto: EditTeamRequestDto,
   ): Promise<EditTeamResponseDto> {
+    // TODO[lery]: 인가 계층 구현 후 수정 필요
     const { numbers, name, note } = requestDto;
 
     const team = await this.teamService.editTeam(teamId, {
