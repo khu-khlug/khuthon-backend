@@ -12,6 +12,7 @@ import { ulid } from 'ulid';
 import { MemberState, TeamState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
 import { EventEntity } from '@khlug/khuthon/entities/EventEntity';
+import { FileEntity } from '@khlug/khuthon/entities/FileEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
@@ -50,6 +51,8 @@ export class TeamService {
     private readonly teamRepository: Repository<TeamEntity>,
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
+    @InjectRepository(FileEntity)
+    private readonly fileRepository: Repository<FileEntity>,
 
     private readonly smsSender: SmsSender,
     private readonly logger: KhuthonLogger,
@@ -270,6 +273,14 @@ export class TeamService {
 
     const fileKey = `attachments/${team.id}/${ulid()}.pdf`;
     const presignedPost = await this.s3Adapter.getPresignedPost(fileKey);
+
+    const newFile = this.fileRepository.create({
+      id: ulid(),
+      teamId,
+      fileKey,
+    });
+    await this.fileRepository.save(newFile);
+
     return presignedPost;
   }
 
