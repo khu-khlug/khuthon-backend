@@ -6,7 +6,6 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 
 import { configuration } from './config';
 import { DatabaseConfig } from './config/DatabaseConfig';
-import { SmsSender } from './sms/SmsSender';
 
 @Module({
   imports: [
@@ -40,7 +39,7 @@ import { SmsSender } from './sms/SmsSender';
       },
     }),
   ],
-  providers: [SmsSender],
-  exports: [SmsSender],
+  providers: [],
+  exports: [],
 })
 export class CoreModule {}

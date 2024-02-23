@@ -10,11 +10,11 @@ import { ulid } from 'ulid';
 
 import { MemberState, TeamState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
-import { KhuthonLogger } from '@khlug/core/log/KhuthonLogger';
-import { SmsSender } from '@khlug/core/sms/SmsSender';
 import { EventEntity } from '@khlug/khuthon/entities/EventEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
+import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
+import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
 import { isSameStringArray } from '@khlug/util';
 
 type RegisterTeamParams = {
