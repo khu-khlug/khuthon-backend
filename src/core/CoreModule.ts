@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 
+import { AuthGuard } from './auth/AuthGuard';
 import { configuration } from './config';
 import { DatabaseConfig } from './config/DatabaseConfig';
 
@@ -39,7 +41,12 @@ import { DatabaseConfig } from './config/DatabaseConfig';
       },
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
   exports: [],
 })
 export class CoreModule {}

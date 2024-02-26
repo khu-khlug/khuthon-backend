@@ -2,7 +2,11 @@ export const Message = {
   // 400 Bad Request
   INVALID_VOTE_DEST_TEAM: '투표할 팀을 정확하게 선택해주세요.',
 
+  // 401 Unauthorized
+  TOKEN_REQUIRED: '토큰이 필요합니다.',
+
   // 403 Forbidden
+  FORBIDDEN_RESOURCE: '접근 권한이 없습니다.',
   ONLY_MEMBERS_CAN_WITHDRAW: '팀원만 팀의 참가 신청을 철회할 수 있습니다.',
   ONLY_MEMBERS_CAN_UPDATE_TEAM_IDEA:
     '팀원만 팀의 아이디어를 수정할 수 있습니다.',
