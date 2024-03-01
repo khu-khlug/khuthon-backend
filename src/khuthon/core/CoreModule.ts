@@ -3,7 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import {
+  addTransactionalDataSource,
+  getDataSourceByName,
+} from 'typeorm-transactional';
 
 import { AuthGuard } from './auth/AuthGuard';
 import { configuration } from './config';
@@ -42,7 +45,10 @@ const exportableProviders = [KhuthonLogger, S3Adapter, SmsSender];
           throw new Error('Database configuration is not found');
         }
 
-        return addTransactionalDataSource(new DataSource(option));
+        return (
+          getDataSourceByName('default') ||
+          addTransactionalDataSource(new DataSource(option))
+        );
       },
     }),
   ],
