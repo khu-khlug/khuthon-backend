@@ -38,6 +38,6 @@ export class ManagerTeamController {
   @Transactional()
   async leaveTeam(@Param('teamId') teamId: string): Promise<void> {
     // TODO[lery]: 인가 계층 구현 후 수정 필요
-    await this.teamManageService.leaveTeam(teamId, 'memberId');
+    await this.teamManageService.leaveTeam(teamId);
   }
 }
