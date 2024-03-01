@@ -28,4 +28,5 @@ export const Message = {
   CANNOT_SUBMIT_ATTACHMENT_NOW: '제출 가능한 시기가 아닙니다.',
   CANNOT_VOTE_NOW: '투표 기간이 아닙니다.',
   ALREADY_VOTED: '이미 투표했습니다.',
+  INVALID_SMS_TARGET_MEMBER: '메시지를 보낼 대상을 정확하게 선택해주세요.',
 } as const;
