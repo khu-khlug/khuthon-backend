@@ -119,6 +119,7 @@ export class TeamService {
       idea: '',
       note: params.team.note,
       state: TeamState.REGISTERED,
+      prize: null,
       members: [newMember],
     });
 
@@ -225,6 +226,8 @@ export class TeamService {
         `[khuthon] ${team.name} 팀의 참가 신청이 철회되었습니다.`,
       );
     }
+
+    await this.teamRepository.delete(team.id);
 
     await this.logger.log(`${team.name} 팀의 참가 신청이 철회되었습니다.`);
   }

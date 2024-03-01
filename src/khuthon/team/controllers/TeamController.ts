@@ -11,12 +11,12 @@ import { Transactional } from 'typeorm-transactional';
 
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
-import { EditTeamRequestDto } from './dto/EditTeamRequestDto';
-import { EditTeamResponseDto } from './dto/EditTeamResponseDto';
-import { IssueAttachmentPresignedPostResponseDto } from './dto/IssueAttachmentPresignedPostResponseDto';
-import { RegisterTeamRequestDto } from './dto/RegisterTeamRequestDto';
-import { RegisterTeamResponseDto } from './dto/RegisterTeamResponseDto';
-import { UpdateTeamIdeaRequestDto } from './dto/UpdateTeamIdeaRequestDto';
+import { EditTeamRequestDto } from './dto/member/EditTeamRequestDto';
+import { EditTeamResponseDto } from './dto/member/EditTeamResponseDto';
+import { IssueAttachmentPresignedPostResponseDto } from './dto/member/IssueAttachmentPresignedPostResponseDto';
+import { RegisterTeamRequestDto } from './dto/member/RegisterTeamRequestDto';
+import { RegisterTeamResponseDto } from './dto/member/RegisterTeamResponseDto';
+import { UpdateTeamIdeaRequestDto } from './dto/member/UpdateTeamIdeaRequestDto';
 
 @Controller()
 export class TeamController {
