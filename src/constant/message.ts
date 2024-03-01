@@ -16,6 +16,7 @@ export const Message = {
   NO_REGISTERING_EVENT: '접수 중인 행사가 없습니다.',
   TEAM_NOT_FOUND: '해당되는 팀이 없습니다.',
   FILE_NOT_FOUND: '해당되는 파일이 없습니다.',
+  NOTICE_NOT_FOUND: '존재하지 않는 게시글입니다.',
   EVENT_NOT_FOUND_ON_THIS_YEAR: '올해에는 아직 행사가 없습니다.',
 
   // 422 Unprocessable Entity
