@@ -7,8 +7,8 @@ import { Message } from '@khlug/constant/message';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { VoteEntity } from '@khlug/khuthon/entities/VoteEntity';
 import { EventService } from '@khlug/khuthon/event/services/EventService';
-import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
-import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
+import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
+import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
 
 @Injectable()
 export class VoteService {

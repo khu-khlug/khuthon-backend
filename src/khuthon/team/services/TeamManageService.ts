@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 
 import { Message } from '@khlug/constant/message';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
-import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
-import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
+import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
+import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
 
 @Injectable()
 export class TeamManageService {

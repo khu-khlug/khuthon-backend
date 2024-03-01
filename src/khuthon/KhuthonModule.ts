@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { CoreModule } from './core/CoreModule';
 import { EventEntity } from './entities/EventEntity';
 import { FileEntity } from './entities/FileEntity';
 import { MemberEntity } from './entities/MemberEntity';
@@ -8,11 +9,8 @@ import { NoticeEntity } from './entities/NoticeEntity';
 import { TeamEntity } from './entities/TeamEntity';
 import { VoteEntity } from './entities/VoteEntity';
 import { EventService } from './event/services/EventService';
-import { KhuthonLogger } from './log/KhuthonLogger';
 import { ManagerNoticeController } from './notice/controllers/ManagerNoticeController';
 import { NoticeService } from './notice/service/NoticeService';
-import { S3Adapter } from './s3/S3Adapter';
-import { SmsSender } from './sms/SmsSender';
 import { ManagerTeamController } from './team/controllers/ManagerTeamController';
 import { TeamController } from './team/controllers/TeamController';
 import { TeamManageService } from './team/services/TeamManageService';
@@ -30,6 +28,7 @@ import { VoteService } from './vote/services/VoteService';
       VoteEntity,
       NoticeEntity,
     ]),
+    CoreModule,
   ],
   controllers: [
     TeamController,
@@ -43,9 +42,6 @@ import { VoteService } from './vote/services/VoteService';
     EventService,
     VoteService,
     NoticeService,
-    SmsSender,
-    KhuthonLogger,
-    S3Adapter,
   ],
 })
 export class KhuthonModule {}

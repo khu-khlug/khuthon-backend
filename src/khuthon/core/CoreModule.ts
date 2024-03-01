@@ -8,6 +8,11 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AuthGuard } from './auth/AuthGuard';
 import { configuration } from './config';
 import { DatabaseConfig } from './config/DatabaseConfig';
+import { KhuthonLogger } from './log/KhuthonLogger';
+import { S3Adapter } from './s3/S3Adapter';
+import { SmsSender } from './sms/SmsSender';
+
+const exportableProviders = [KhuthonLogger, S3Adapter, SmsSender];
 
 @Module({
   imports: [
@@ -46,7 +51,8 @@ import { DatabaseConfig } from './config/DatabaseConfig';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    ...exportableProviders,
   ],
-  exports: [],
+  exports: exportableProviders,
 })
 export class CoreModule {}

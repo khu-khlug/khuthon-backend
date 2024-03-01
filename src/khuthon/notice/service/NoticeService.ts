@@ -5,7 +5,7 @@ import { ulid } from 'ulid';
 
 import { Message } from '@khlug/constant/message';
 import { NoticeEntity } from '@khlug/khuthon/entities/NoticeEntity';
-import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
+import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 
 @Injectable()
 export class NoticeService {

@@ -15,9 +15,9 @@ import { FileEntity } from '@khlug/khuthon/entities/FileEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { EventService } from '@khlug/khuthon/event/services/EventService';
-import { KhuthonLogger } from '@khlug/khuthon/log/KhuthonLogger';
-import { S3Adapter } from '@khlug/khuthon/s3/S3Adapter';
-import { SmsSender } from '@khlug/khuthon/sms/SmsSender';
+import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
+import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
+import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
 import { isSameStringArray } from '@khlug/util';
 
 type RegisterTeamParams = {
