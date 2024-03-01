@@ -1,4 +1,4 @@
-import { UserRole } from '@khlug/core/auth/User';
+import { UserRole } from '@khlug/khuthon/core/auth/User';
 
 export const ROLES_DECORATOR_KEY = Symbol('Khuthon/Roles');
 

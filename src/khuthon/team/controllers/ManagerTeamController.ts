@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Put } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
-import { Roles } from '@khlug/core/auth/Roles';
-import { UserRole } from '@khlug/core/auth/User';
+import { Roles } from '@khlug/khuthon/core/auth/Roles';
+import { UserRole } from '@khlug/khuthon/core/auth/User';
 
 import { TeamManageService } from '../services/TeamManageService';
 import { UpdateTeamIdeaRequestDto } from './dto/manager/UpdateTeamIdeaRequestDto';

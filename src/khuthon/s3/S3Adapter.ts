@@ -8,7 +8,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { S3Config } from '@khlug/core/config/S3Config';
+import { S3Config } from '@khlug/khuthon/core/config/S3Config';
 
 const _10MB = 10 * 1024 * 1024;
 
