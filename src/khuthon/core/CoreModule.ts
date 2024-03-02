@@ -8,14 +8,26 @@ import {
   getDataSourceByName,
 } from 'typeorm-transactional';
 
+import { PasswordGenerator } from '../common/PasswordGenerator';
 import { AuthGuard } from './auth/AuthGuard';
 import { configuration } from './config';
 import { DatabaseConfig } from './config/DatabaseConfig';
+import { EmailSender } from './email/EmailSender';
 import { KhuthonLogger } from './log/KhuthonLogger';
+import { OtpGenerator } from './otp/OtpGenerator';
 import { S3Adapter } from './s3/S3Adapter';
 import { SmsSender } from './sms/SmsSender';
+import { AccessTokenBuilder } from './token/AccessTokenBuilder';
 
-const exportableProviders = [KhuthonLogger, S3Adapter, SmsSender];
+const exportableProviders = [
+  KhuthonLogger,
+  S3Adapter,
+  SmsSender,
+  EmailSender,
+  OtpGenerator,
+  PasswordGenerator,
+  AccessTokenBuilder,
+];
 
 @Module({
   imports: [

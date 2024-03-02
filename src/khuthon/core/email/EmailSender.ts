@@ -18,7 +18,7 @@ export class EmailSender {
   }
 
   // TODO[lery]: 이후 템플릿 적용하여 메일 보내기
-  async sendEmail(
+  async send(
     to: string,
     subject: string,
     text: string,

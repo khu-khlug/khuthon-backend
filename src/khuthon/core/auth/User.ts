@@ -2,14 +2,12 @@ export const UserRole = {
   MEMBER: 'MEMBER',
   EXAMINER: 'EXAMINER',
   MANAGER: 'MANAGER',
-  ANONYMOUS: 'ANONYMOUS',
 } as const;
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export type MemberUser = {
   role: 'MEMBER';
   memberId: string;
-  teamId: string;
 };
 
 export type ExaminerUser = {
@@ -22,8 +20,4 @@ export type ManagerUser = {
   email: string;
 };
 
-export type AnonymousUser = {
-  role: 'ANONYMOUS';
-};
-
-export type User = MemberUser | ExaminerUser | ManagerUser | AnonymousUser;
+export type User = MemberUser | ExaminerUser | ManagerUser;
