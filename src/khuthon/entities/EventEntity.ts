@@ -38,6 +38,12 @@ export class EventEntity {
   @Column('datetime')
   judgeEndAt!: Date;
 
+  @Column('int')
+  examinerAllot!: number; // 심사 위원 총 배점
+
+  @Column('int')
+  participantAllot!: number; // 참가자 총 배점
+
   @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 
