@@ -4,8 +4,7 @@ export const TeamState = {
 export type TeamState = (typeof TeamState)[keyof typeof TeamState];
 
 export const MemberState = {
-  INVITING: 'INVITING',
-  NEED_EMAIL_VERIFICATION: 'NEED_EMAIL_VERIFICATION',
+  NEED_VERIFICATION: 'NEED_VERIFICATION',
   ACTIVE: 'ACTIVE',
 } as const;
 export type MemberState = (typeof MemberState)[keyof typeof MemberState];

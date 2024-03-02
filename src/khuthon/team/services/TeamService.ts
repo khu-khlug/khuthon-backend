@@ -11,13 +11,13 @@ import { ulid } from 'ulid';
 
 import { MemberState, TeamState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
+import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
+import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
+import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
 import { FileEntity } from '@khlug/khuthon/entities/FileEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { EventService } from '@khlug/khuthon/event/services/EventService';
-import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
-import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
-import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
 import { isSameStringArray } from '@khlug/util';
 
 type RegisterTeamParams = {
@@ -109,7 +109,7 @@ export class TeamService {
       grade: params.member.grade,
       phone: params.member.phone,
       email: params.member.email.toLowerCase(),
-      state: MemberState.NEED_EMAIL_VERIFICATION,
+      state: MemberState.NEED_VERIFICATION,
     });
 
     const newTeam = this.teamRepository.create({

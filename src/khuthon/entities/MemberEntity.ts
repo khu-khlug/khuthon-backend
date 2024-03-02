@@ -30,7 +30,7 @@ export class MemberEntity {
   @Column('varchar', { length: 60, nullable: true })
   university!: University | null;
 
-  @Column('varchar', { length: 160, nullable: true })
+  @Column('varchar', { length: 1010, nullable: true })
   college!: string | null;
 
   @Column('int', { nullable: true })
