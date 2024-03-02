@@ -1,6 +1,6 @@
 export const UserRole = {
   MEMBER: 'MEMBER',
-  JUDGE: 'JUDGE',
+  EXAMINER: 'EXAMINER',
   MANAGER: 'MANAGER',
   ANONYMOUS: 'ANONYMOUS',
 } as const;
@@ -12,9 +12,9 @@ export type MemberUser = {
   teamId: string;
 };
 
-export type JudgeUser = {
-  role: 'JUDGE';
-  judgeId: string;
+export type ExaminerUser = {
+  role: 'EXAMINER';
+  examinerId: string;
 };
 
 export type ManagerUser = {
@@ -26,4 +26,4 @@ export type AnonymousUser = {
   role: 'ANONYMOUS';
 };
 
-export type User = MemberUser | JudgeUser | ManagerUser | AnonymousUser;
+export type User = MemberUser | ExaminerUser | ManagerUser | AnonymousUser;

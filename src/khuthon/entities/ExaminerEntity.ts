@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('Judge')
-export class JudgeEntity {
+@Entity('Examiner')
+export class ExaminerEntity {
   @PrimaryColumn('varchar', { length: 100 })
   id!: string;
 
