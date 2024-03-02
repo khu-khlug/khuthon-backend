@@ -17,6 +17,7 @@ export const Message = {
   TEAM_NOT_FOUND: '해당되는 팀이 없습니다.',
   FILE_NOT_FOUND: '해당되는 파일이 없습니다.',
   NOTICE_NOT_FOUND: '존재하지 않는 게시글입니다.',
+  EXAMINER_NOT_FOUND: '해당되는 심사위원이 없습니다.',
   EVENT_NOT_FOUND_ON_THIS_YEAR: '올해에는 아직 행사가 없습니다.',
 
   // 422 Unprocessable Entity
@@ -27,6 +28,7 @@ export const Message = {
   CANNOT_EDIT_NOW: '수정 가능한 시기가 아닙니다.',
   CANNOT_SUBMIT_ATTACHMENT_NOW: '제출 가능한 시기가 아닙니다.',
   CANNOT_VOTE_NOW: '투표 기간이 아닙니다.',
+  CANNOT_JUDGE_NOW: '심사/투표 기간이 아닙니다.',
   ALREADY_VOTED: '이미 투표했습니다.',
   INVALID_SMS_TARGET_MEMBER: '메시지를 보낼 대상을 정확하게 선택해주세요.',
 } as const;

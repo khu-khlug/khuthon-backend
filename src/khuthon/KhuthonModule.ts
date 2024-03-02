@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from './core/CoreModule';
 import { EventEntity } from './entities/EventEntity';
 import { FileEntity } from './entities/FileEntity';
+import { JudgeEntity } from './entities/JudgeEntity';
 import { MemberEntity } from './entities/MemberEntity';
 import { NoticeEntity } from './entities/NoticeEntity';
 import { TeamEntity } from './entities/TeamEntity';
@@ -27,6 +28,7 @@ import { VoteService } from './vote/services/VoteService';
       FileEntity,
       VoteEntity,
       NoticeEntity,
+      JudgeEntity,
     ]),
     CoreModule,
   ],
