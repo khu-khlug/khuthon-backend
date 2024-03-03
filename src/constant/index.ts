@@ -1,8 +1,3 @@
-export const TeamState = {
-  REGISTERED: 'REGISTERED',
-} as const;
-export type TeamState = (typeof TeamState)[keyof typeof TeamState];
-
 export const MemberState = {
   NEED_VERIFICATION: 'NEED_VERIFICATION',
   NEED_STUDENT_INFO: 'NEED_STUDENT_INFO',

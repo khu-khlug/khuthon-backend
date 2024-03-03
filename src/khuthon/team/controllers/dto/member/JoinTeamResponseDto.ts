@@ -1,6 +1,6 @@
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 
-export class RegisterTeamResponseDto {
+export class JoinTeamResponseDto {
   id: string;
   year: number;
   name: string;

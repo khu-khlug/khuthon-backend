@@ -9,11 +9,15 @@ import {
 } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
+import { Requester } from '@khlug/khuthon/core/auth/Requester';
+import { Roles } from '@khlug/khuthon/core/auth/Roles';
+import { MemberUser, UserRole } from '@khlug/khuthon/core/auth/User';
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
 import { EditTeamRequestDto } from './dto/member/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/member/EditTeamResponseDto';
 import { IssueAttachmentPresignedPostResponseDto } from './dto/member/IssueAttachmentPresignedPostResponseDto';
+import { JoinTeamResponseDto } from './dto/member/JoinTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/member/RegisterTeamRequestDto';
 import { RegisterTeamResponseDto } from './dto/member/RegisterTeamResponseDto';
 import { UpdateTeamIdeaRequestDto } from './dto/member/UpdateTeamIdeaRequestDto';
@@ -23,29 +27,31 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post('/teams')
+  @Roles([UserRole.MEMBER])
   @Transactional()
   async registerTeam(
+    @Requester() requester: MemberUser,
     @Body() requestDto: RegisterTeamRequestDto,
   ): Promise<RegisterTeamResponseDto> {
-    const { member: memberParams, team: teamParams } = requestDto;
+    const { memberId } = requester;
+    const { teamName } = requestDto;
 
-    const team = await this.teamService.registerTeam({
-      member: {
-        studentNumber: memberParams.studentNumber,
-        name: memberParams.name,
-        university: memberParams.university,
-        college: memberParams.college,
-        grade: memberParams.grade,
-        phone: memberParams.phone,
-        email: memberParams.email,
-      },
-      team: {
-        name: teamParams.name,
-        note: teamParams.note,
-      },
-    });
+    const team = await this.teamService.registerTeam(memberId, teamName);
 
     return new RegisterTeamResponseDto(team);
+  }
+
+  @Post('/teams/join')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
+  async joinTeam(
+    @Requester() requester: MemberUser,
+  ): Promise<JoinTeamResponseDto> {
+    const { memberId } = requester;
+
+    const team = await this.teamService.joinTeam(memberId);
+
+    return new JoinTeamResponseDto(team);
   }
 
   @Patch('/teams/:teamId')

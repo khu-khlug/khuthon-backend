@@ -12,8 +12,10 @@ flowchart TB
 
   subgraph "state = `NEED_TEAM`"
   has-team{"참가한 팀이 있는가?"}
+  is-max-participant-exceeded{"최대 팀 수/참가 인원을\n넘지 않았는가?"}
   create-team["팀 생성"]
   participate-team["팀 참가"]
+  participant-failed["참가 실패"]
   end
 
   subgraph "state = `ACTIVE`"
@@ -23,8 +25,10 @@ flowchart TB
   create-member-->email-verify
   email-verify-->input-student-info
   input-student-info-->|"state를 `NEED_TEAM`로 변경"|has-team
-  has-team-->|"FALSE"|create-team
-  create-team-->|"state를 `ACTIVE`로 변경"|team-works
   has-team-->|"TRUE"|participate-team
+  has-team-->|"FALSE"|is-max-participant-exceeded
+  is-max-participant-exceeded-->|"TRUE"|create-team
+  is-max-participant-exceeded-->|"FALSE"|participant-failed
+  create-team-->|"state를 `ACTIVE`로 변경"|team-works
   participate-team-->|"state를 `ACTIVE`로 변경"|team-works
 ```

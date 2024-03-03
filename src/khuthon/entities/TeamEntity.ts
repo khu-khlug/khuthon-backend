@@ -6,8 +6,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { TeamState } from '@khlug/constant';
-
 @Entity('Team')
 export class TeamEntity {
   @PrimaryColumn('varchar', { length: 100 })
@@ -21,9 +19,6 @@ export class TeamEntity {
 
   @Column('varchar', { length: 510 })
   idea!: string;
-
-  @Column('varchar', { length: 50 })
-  state!: TeamState;
 
   @Column('varchar', { length: 1010 })
   note!: string;
