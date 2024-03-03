@@ -7,7 +7,7 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: test
+      - MYSQL_ROOT_PASSWORD=test
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -37,6 +37,17 @@ services:
       retries: 20
       start_period: 5s
 
+  mock-api:
+    image: mockserver/mockserver:5.15.0
+    container_name: mock-api
+    ports:
+      - 1080:1080
+    environment:
+      - MOCKSERVER_WATCH_INITIALIZATION_JSON=true
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/etc/mockserver/init.json
+    volumes:
+      - ./.mockserver/init.json:/etc/mockserver/init.json
+
   app:
     build:
       context: .
@@ -53,4 +64,3 @@ services:
         condition: service_healthy
       localstack:
         condition: service_healthy
-    
