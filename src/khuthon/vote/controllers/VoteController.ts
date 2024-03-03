@@ -1,4 +1,9 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Transactional } from 'typeorm-transactional';
+
+import { Requester } from '@khlug/khuthon/core/auth/Requester';
+import { Roles } from '@khlug/khuthon/core/auth/Roles';
+import { MemberUser, UserRole } from '@khlug/khuthon/core/auth/User';
 
 import { VoteService } from '../services/VoteService';
 import { VoteRequestDto } from './dto/VoteRequestDto';
@@ -8,12 +13,16 @@ export class VoteController {
   constructor(private readonly voteService: VoteService) {}
 
   @Post('/teams/:teamId/vote')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
   async vote(
+    @Requester() requester: MemberUser,
     @Param('teamId') teamId: string,
     @Body() requestDto: VoteRequestDto,
   ) {
-    // TODO[lery]: 인가 계층 구현 후 수정 필요
+    const { memberId } = requester;
     const { destTeamIds } = requestDto;
-    await this.voteService.vote(teamId, destTeamIds);
+
+    await this.voteService.vote(teamId, memberId, destTeamIds);
   }
 }

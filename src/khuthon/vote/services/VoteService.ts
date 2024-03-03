@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ulid } from 'ulid';
@@ -26,7 +30,11 @@ export class VoteService {
     private readonly logger: KhuthonLogger,
   ) {}
 
-  async vote(sourceTeamId: string, destTeamIds: string[]): Promise<void> {
+  async vote(
+    sourceTeamId: string,
+    memberId: string,
+    destTeamIds: string[],
+  ): Promise<void> {
     const event = await this.eventService.getThisYearEvent();
     if (!event.isJudging()) {
       throw new UnprocessableEntityException(Message.CANNOT_VOTE_NOW);
@@ -37,6 +45,15 @@ export class VoteService {
     });
     if (!sourceTeam) {
       throw new UnprocessableEntityException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.teamId !== sourceTeamId) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_VOTE);
     }
 
     // 중복 투표 방지
@@ -50,6 +67,11 @@ export class VoteService {
     // 팀 중복 선택 방지
     const uniqueDestTeamIdSet = new Set(destTeamIds);
     if (uniqueDestTeamIdSet.size !== destTeamIds.length) {
+      throw new UnprocessableEntityException(Message.INVALID_VOTE_DEST_TEAM);
+    }
+
+    const hasMyTeamVote = destTeamIds.includes(sourceTeamId);
+    if (hasMyTeamVote) {
       throw new UnprocessableEntityException(Message.INVALID_VOTE_DEST_TEAM);
     }
 
