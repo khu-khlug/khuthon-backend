@@ -48,7 +48,7 @@ export class TeamManageService {
     );
   }
 
-  async leaveTeam(teamId: string): Promise<void> {
+  async deleteTeam(teamId: string): Promise<void> {
     const team = await this.teamRepository.findOneBy({ id: teamId });
     if (!team) {
       throw new NotFoundException(Message.TEAM_NOT_FOUND);
