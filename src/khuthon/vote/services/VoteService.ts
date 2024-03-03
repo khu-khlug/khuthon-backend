@@ -76,12 +76,16 @@ export class VoteService {
     await this.voteRepository.save(votes);
 
     await Promise.all(
-      sourceTeamMembers.map((member) =>
-        this.smsSender.send(
-          member.phone!,
+      sourceTeamMembers.map(async (member) => {
+        if (!member.phone) {
+          return;
+        }
+
+        await this.smsSender.send(
+          member.phone,
           `[khuthon] ${sourceTeam.name} 팀의 투표가 완료되었습니다.`,
-        ),
-      ),
+        );
+      }),
     );
     await this.logger.log(`${sourceTeam.name} 팀이 투표를 완료했습니다.`);
   }

@@ -31,6 +31,7 @@ export const Message = {
   CANNOT_VOTE_NOW: '투표 기간이 아닙니다.',
   CANNOT_JUDGE_NOW: '심사/투표 기간이 아닙니다.',
   CANNOT_VERIFY_NOW: '지금은 이메일 인증을 할 수 없습니다.',
+  CANNOT_UPDATE_STUDENT_INFO_NOW: '지금은 학적 정보를 수정할 수 없습니다.',
   ALREADY_VOTED: '이미 투표했습니다.',
   INVALID_SMS_TARGET_MEMBER: '메시지를 보낼 대상을 정확하게 선택해주세요.',
   INVALID_OTP: '올바르지 않은 인증번호입니다.',

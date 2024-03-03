@@ -10,7 +10,7 @@ flowchart TB
   input-student-info["학적 정보 저장"]
   end
 
-  subgraph "state = `NO_TEAM`"
+  subgraph "state = `NEED_TEAM`"
   has-team{"참가한 팀이 있는가?"}
   create-team["팀 생성"]
   participate-team["팀 참가"]
@@ -22,7 +22,7 @@ flowchart TB
 
   create-member-->email-verify
   email-verify-->input-student-info
-  input-student-info-->|"state를 `NO_TEAM`로 변경"|has-team
+  input-student-info-->|"state를 `NEED_TEAM`로 변경"|has-team
   has-team-->|"FALSE"|create-team
   create-team-->|"state를 `ACTIVE`로 변경"|team-works
   has-team-->|"TRUE"|participate-team

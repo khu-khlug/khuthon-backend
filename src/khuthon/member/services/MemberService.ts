@@ -107,4 +107,39 @@ export class MemberService {
 
     await this.logger.log(`'${member.email}'의 이메일 인증이 완료되었습니다.`);
   }
+
+  async updateStudentInfo(
+    memberId: string,
+    studentInfo: {
+      studentNumber: string;
+      name: string;
+      college: string;
+      grade: number;
+      phone: string | null;
+    },
+  ): Promise<void> {
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.state !== MemberState.NEED_STUDENT_INFO) {
+      throw new UnprocessableEntityException(
+        Message.CANNOT_UPDATE_STUDENT_INFO_NOW,
+      );
+    }
+
+    member.studentNumber = studentInfo.studentNumber;
+    member.name = studentInfo.name;
+    member.college = studentInfo.college;
+    member.grade = studentInfo.grade;
+    member.phone = studentInfo.phone;
+
+    member.state = MemberState.NEED_TEAM;
+
+    await this.memberRepository.save(member);
+    await this.logger.log(
+      `'${member.email}'의 학적 정보가 업데이트 되었습니다.`,
+    );
+  }
 }
