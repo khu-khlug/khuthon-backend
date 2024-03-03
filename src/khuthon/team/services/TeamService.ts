@@ -6,7 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
 import { MemberState, TeamState, University } from '@khlug/constant';
@@ -120,7 +120,6 @@ export class TeamService {
       note: params.team.note,
       state: TeamState.REGISTERED,
       prize: null,
-      members: [newMember],
     });
 
     await this.teamRepository.save(newTeam);
@@ -162,11 +161,14 @@ export class TeamService {
     }
 
     if (numbers) {
-      const prevStudentNumbers = team.members.map(
-        (member) => member.studentNumber,
+      const members = await this.memberRepository.findBy({ teamId });
+      const prevStudentNumbers = members.map((member) => member.studentNumber!);
+
+      const willDeleteMembers = members.filter(
+        (member) => !numbers.includes(member.studentNumber!),
       );
 
-      const newMembers = numbers
+      const willCreateMembers = numbers
         .filter((studentNumber) => !prevStudentNumbers.includes(studentNumber))
         .map((studentNumber) =>
           this.memberRepository.create({
@@ -174,25 +176,19 @@ export class TeamService {
             year: new Date().getFullYear(),
             teamId: team.id,
             studentNumber,
-            state: MemberState.INVITING,
+            state: MemberState.NEED_VERIFICATION,
+            university: members[0].university, // 팀원과 동일한 대학
           }),
         );
 
-      team.members = team.members
-        .filter((member) => !numbers.includes(member.studentNumber))
-        .concat(newMembers);
-
-      const newStudentNumbers = team.members.map(
-        (member) => member.studentNumber,
-      );
-
-      if (newStudentNumbers.length < 1 || newStudentNumbers.length > 4) {
-        throw new UnprocessableEntityException(Message.INVALID_MEMBER_COUNT);
-      }
-
-      if (!isSameStringArray(prevStudentNumbers, newStudentNumbers)) {
+      if (!isSameStringArray(prevStudentNumbers, numbers)) {
         await this.logger.log(`${team.name} 팀이 팀원을 수정했습니다.`);
       }
+
+      await this.memberRepository.save(willCreateMembers);
+      await this.memberRepository.delete({
+        id: In(willDeleteMembers.map((m) => m.id)),
+      });
     }
 
     await this.teamRepository.save(team);
@@ -211,12 +207,14 @@ export class TeamService {
       throw new NotFoundException(Message.TEAM_NOT_FOUND);
     }
 
-    const member = team.members.find((member) => member.id === memberId);
+    const members = await this.memberRepository.findBy({ teamId });
+
+    const member = members.find((member) => member.id === memberId);
     if (!member) {
       throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_WITHDRAW);
     }
 
-    const smsTargetPhoneNumbers = team.members
+    const smsTargetPhoneNumbers = members
       .map((member) => member.phone)
       .filter((phone): phone is string => !!phone);
 
@@ -247,7 +245,10 @@ export class TeamService {
       throw new NotFoundException(Message.TEAM_NOT_FOUND);
     }
 
-    const member = team.members.find((member) => member.id === memberId);
+    const member = await this.memberRepository.findOneBy({
+      teamId,
+      id: memberId,
+    });
     if (!member) {
       throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM_IDEA);
     }

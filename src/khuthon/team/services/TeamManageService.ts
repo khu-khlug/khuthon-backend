@@ -3,15 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Message } from '@khlug/constant/message';
-import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
+import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
+import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 
 @Injectable()
 export class TeamManageService {
   constructor(
     @InjectRepository(TeamEntity)
     private readonly teamRepository: Repository<TeamEntity>,
+    @InjectRepository(MemberEntity)
+    private readonly memberRepository: Repository<MemberEntity>,
 
     private readonly logger: KhuthonLogger,
     private readonly smsSender: SmsSender,
@@ -51,7 +54,9 @@ export class TeamManageService {
       throw new NotFoundException(Message.TEAM_NOT_FOUND);
     }
 
-    const smsTargetPhoneNumbers = team.members
+    const members = await this.memberRepository.findBy({ teamId });
+
+    const smsTargetPhoneNumbers = members
       .map((member) => member.phone)
       .filter((phone): phone is string => !!phone);
 

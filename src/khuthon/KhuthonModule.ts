@@ -12,7 +12,7 @@ import { NoticeEntity } from './entities/NoticeEntity';
 import { TeamEntity } from './entities/TeamEntity';
 import { VoteEntity } from './entities/VoteEntity';
 import { EventService } from './event/services/EventService';
-import { MemberController } from './member/controllers/MemberController.1';
+import { MemberController } from './member/controllers/MemberController';
 import { MemberService } from './member/services/MemberService';
 import { ManagerNoticeController } from './notice/controllers/ManagerNoticeController';
 import { NoticeService } from './notice/service/NoticeService';

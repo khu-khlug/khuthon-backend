@@ -34,6 +34,7 @@ export class MemberEntity {
   state!: MemberState;
 
   @Column('varchar', { length: 100, nullable: true })
+  @Index('idx_member_teamId')
   teamId!: string | null;
 
   @Column('varchar', { length: 15, nullable: true })

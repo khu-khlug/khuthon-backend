@@ -6,6 +6,7 @@ import { ulid } from 'ulid';
 import { Message } from '@khlug/constant/message';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
+import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { VoteEntity } from '@khlug/khuthon/entities/VoteEntity';
 import { EventService } from '@khlug/khuthon/event/services/EventService';
@@ -17,6 +18,8 @@ export class VoteService {
     private readonly voteRepository: Repository<VoteEntity>,
     @InjectRepository(TeamEntity)
     private readonly teamRepository: Repository<TeamEntity>,
+    @InjectRepository(MemberEntity)
+    private readonly memberRepository: Repository<MemberEntity>,
 
     private readonly eventService: EventService,
     private readonly smsSender: SmsSender,
@@ -66,10 +69,14 @@ export class VoteService {
       }),
     );
 
+    const sourceTeamMembers = await this.memberRepository.findBy({
+      teamId: sourceTeamId,
+    });
+
     await this.voteRepository.save(votes);
 
     await Promise.all(
-      sourceTeam.members.map((member) =>
+      sourceTeamMembers.map((member) =>
         this.smsSender.send(
           member.phone!,
           `[khuthon] ${sourceTeam.name} 팀의 투표가 완료되었습니다.`,
