@@ -6,7 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
 import { MemberState } from '@khlug/constant';
@@ -19,10 +19,8 @@ import { InvitationEntity } from '@khlug/khuthon/entities/InvitationEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 import { TeamEntity } from '@khlug/khuthon/entities/TeamEntity';
 import { EventService } from '@khlug/khuthon/event/services/EventService';
-import { isSameStringArray } from '@khlug/util';
 
 type EditTeamParams = {
-  numbers: string[] | null;
   name: string | null;
   note: string | null;
 };
@@ -117,111 +115,7 @@ export class TeamService {
     return newTeam;
   }
 
-  async joinTeam(memberId: string): Promise<TeamEntity> {
-    const event = await this.eventService.getThisYearEvent();
-    if (!event.isRegistering()) {
-      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
-    }
-
-    const member = await this.memberRepository.findOneBy({ id: memberId });
-    if (!member) {
-      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
-    }
-
-    if (member.state !== MemberState.NEED_TEAM || member.teamId) {
-      throw new UnprocessableEntityException(Message.CANNOT_REGISTER_TEAM_NOW);
-    }
-
-    const invitation = await this.invitationRepository.findOneBy({
-      studentNumber: member.studentNumber!,
-    });
-    if (!invitation) {
-      throw new NotFoundException(Message.INVITATION_NOT_FOUND);
-    }
-
-    const team = await this.teamRepository.findOneBy({ id: invitation.teamId });
-    if (!team) {
-      throw new NotFoundException(Message.TEAM_NOT_FOUND);
-    }
-
-    member.teamId = team.id;
-    member.state = MemberState.ACTIVE;
-    await this.memberRepository.save(member);
-
-    if (member.phone) {
-      await this.smsSender.send(
-        member.phone,
-        `[khuthon] ${team.name} 팀에 참가되었습니다.`,
-      );
-    }
-
-    await this.logger.log(
-      `${member.name}(${member.id}) 참가자가 ${team.name} 팀에 참가되었습니다.`,
-    );
-
-    return team;
-  }
-
-  async editTeam(teamId: string, params: EditTeamParams): Promise<TeamEntity> {
-    const event = await this.eventService.getThisYearEvent();
-    if (!event.isRegistering()) {
-      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
-    }
-
-    const team = await this.teamRepository.findOneBy({ id: teamId });
-    if (!team) {
-      throw new NotFoundException(Message.TEAM_NOT_FOUND);
-    }
-
-    const { name, note, numbers } = params;
-
-    if (name && name !== team.name) {
-      await this.logger.log(`${team.name} 팀이 이름을 ${name}로 바꾸었습니다.`);
-      team.name = name;
-    }
-
-    if (note && note !== team.note) {
-      await this.logger.log(`${team.name} 팀이 비고 항목을 수정했습니다.`);
-      team.note = note;
-    }
-
-    if (numbers) {
-      const members = await this.memberRepository.findBy({ teamId });
-      const prevStudentNumbers = members.map((member) => member.studentNumber!);
-
-      const willDeleteMembers = members.filter(
-        (member) => !numbers.includes(member.studentNumber!),
-      );
-
-      const willCreateMembers = numbers
-        .filter((studentNumber) => !prevStudentNumbers.includes(studentNumber))
-        .map((studentNumber) =>
-          this.memberRepository.create({
-            id: ulid(),
-            year: new Date().getFullYear(),
-            teamId: team.id,
-            studentNumber,
-            state: MemberState.NEED_VERIFICATION,
-            university: members[0].university, // 팀원과 동일한 대학
-          }),
-        );
-
-      if (!isSameStringArray(prevStudentNumbers, numbers)) {
-        await this.logger.log(`${team.name} 팀이 팀원을 수정했습니다.`);
-      }
-
-      await this.memberRepository.save(willCreateMembers);
-      await this.memberRepository.delete({
-        id: In(willDeleteMembers.map((m) => m.id)),
-      });
-    }
-
-    await this.teamRepository.save(team);
-
-    return team;
-  }
-
-  async leaveTeam(teamId: string, memberId: string): Promise<void> {
+  async deleteTeam(teamId: string, memberId: string): Promise<void> {
     const event = await this.eventService.getThisYearEvent();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
@@ -255,9 +149,237 @@ export class TeamService {
     await this.logger.log(`${team.name} 팀의 참가 신청이 철회되었습니다.`);
   }
 
-  async updateTeamIdea(
-    memberId: string,
+  async editTeam(
     teamId: string,
+    memberId: string,
+    params: EditTeamParams,
+  ): Promise<TeamEntity> {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.teamId !== teamId) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM);
+    }
+
+    const { name, note } = params;
+
+    if (name && name !== team.name) {
+      await this.logger.log(`${team.name} 팀이 이름을 ${name}로 바꾸었습니다.`);
+      team.name = name;
+    }
+
+    if (note && note !== team.note) {
+      await this.logger.log(`${team.name} 팀이 비고 항목을 수정했습니다.`);
+      team.note = note;
+    }
+
+    await this.teamRepository.save(team);
+
+    return team;
+  }
+
+  async inviteTeamMember(
+    teamId: string,
+    memberId: string,
+    studentNumber: string,
+  ) {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.teamId !== teamId) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM);
+    }
+
+    const prevInvitation = await this.invitationRepository.findOneBy({
+      year: event.year,
+      studentNumber,
+    });
+    if (prevInvitation) {
+      throw new UnprocessableEntityException(Message.ALREADY_EXIST_INVITATION);
+    }
+
+    const targetMember = await this.memberRepository.findOneBy({
+      year: event.year,
+      studentNumber,
+    });
+    if (targetMember && targetMember.state === MemberState.ACTIVE) {
+      throw new UnprocessableEntityException(Message.ALREADY_EXIST_INVITATION);
+    }
+
+    const invitation = this.invitationRepository.create({
+      id: ulid(),
+      year: event.year,
+      teamId,
+      studentNumber,
+      university: member.university,
+    });
+    await this.invitationRepository.save(invitation);
+
+    await this.logger.log(
+      `${team.name} 팀에서 ${member.name} 참가자가 ${studentNumber} 학번을 가진 참가자를 초대했습니다.`,
+    );
+  }
+
+  async cancelInvitation(
+    teamId: string,
+    memberId: string,
+    invitationId: string,
+  ) {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.teamId !== teamId) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM);
+    }
+
+    const invitation = await this.invitationRepository.findOneBy({
+      id: invitationId,
+    });
+    if (!invitation) {
+      throw new NotFoundException(Message.INVITATION_NOT_FOUND);
+    }
+
+    if (invitation.teamId !== teamId) {
+      throw new ForbiddenException(Message.FORBIDDEN_RESOURCE);
+    }
+
+    await this.invitationRepository.delete(invitation.id);
+
+    await this.logger.log(
+      `${team.name} 팀에서 ${member.name} 참가자가 초대를 취소했습니다.`,
+    );
+  }
+
+  async joinTeam(memberId: string): Promise<TeamEntity> {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.state !== MemberState.NEED_TEAM || member.teamId) {
+      throw new UnprocessableEntityException(Message.CANNOT_REGISTER_TEAM_NOW);
+    }
+
+    const invitation = await this.invitationRepository.findOneBy({
+      year: event.year,
+      studentNumber: member.studentNumber!,
+    });
+    if (!invitation) {
+      throw new NotFoundException(Message.INVITATION_NOT_FOUND);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: invitation.teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    member.teamId = team.id;
+    member.state = MemberState.ACTIVE;
+    await this.memberRepository.save(member);
+    await this.invitationRepository.delete({ id: invitation.id });
+
+    if (member.phone) {
+      await this.smsSender.send(
+        member.phone,
+        `[khuthon] ${team.name} 팀에 참가되었습니다.`,
+      );
+    }
+
+    await this.logger.log(
+      `${member.name}(${member.id}) 참가자가 ${team.name} 팀에 참가되었습니다.`,
+    );
+
+    return team;
+  }
+
+  async deleteTeamMember(
+    teamId: string,
+    memberId: string,
+    targetMemberId: string,
+  ) {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isRegistering()) {
+      throw new NotFoundException(Message.NO_REGISTERING_EVENT);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.teamId !== teamId) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM);
+    }
+
+    const targetMember = await this.memberRepository.findOneBy({
+      id: targetMemberId,
+    });
+    if (!targetMember) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (targetMember.teamId !== teamId) {
+      throw new ForbiddenException(Message.FORBIDDEN_RESOURCE);
+    }
+
+    targetMember.state = MemberState.NEED_TEAM;
+    targetMember.teamId = null;
+    await this.memberRepository.save(targetMember);
+
+    await this.logger.log(
+      `${team.name} 팀에서 ${member.name} 참가자가 ${targetMember.name} 참가자를 팀에서 내보냈습니다.`,
+    );
+  }
+
+  async updateTeamIdea(
+    teamId: string,
+    memberId: string,
     idea: string,
   ): Promise<void> {
     const event = await this.eventService.getThisYearEvent();

@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+} from 'typeorm';
 
 import { University } from '@khlug/constant';
 
@@ -7,7 +13,11 @@ export class InvitationEntity {
   @PrimaryColumn('varchar', { length: 100 })
   id!: string;
 
+  @Column('int')
+  year!: number;
+
   @Column('varchar', { length: 100 })
+  @Index('idx_invitation_teamId')
   teamId!: string;
 
   @Column('varchar', { length: 15 })

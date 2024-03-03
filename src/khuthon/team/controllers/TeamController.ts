@@ -16,6 +16,7 @@ import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
 import { EditTeamRequestDto } from './dto/member/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/member/EditTeamResponseDto';
+import { InviteTeamMemberRequestDto } from './dto/member/InviteTeamMemberRequestDto';
 import { IssueAttachmentPresignedPostResponseDto } from './dto/member/IssueAttachmentPresignedPostResponseDto';
 import { JoinTeamResponseDto } from './dto/member/JoinTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/member/RegisterTeamRequestDto';
@@ -63,10 +64,9 @@ export class TeamController {
     @Body() requestDto: EditTeamRequestDto,
   ): Promise<EditTeamResponseDto> {
     const { memberId } = requester;
-    const { numbers, name, note } = requestDto;
+    const { name, note } = requestDto;
 
     const team = await this.teamService.editTeam(teamId, memberId, {
-      numbers,
       name,
       note,
     });
@@ -75,17 +75,59 @@ export class TeamController {
   }
 
   @Delete('/teams/:teamId')
+  @Roles([UserRole.MEMBER])
   @Transactional()
-  async leaveTeam(
+  async deleteTeam(
     @Requester() requester: MemberUser,
     @Param('teamId') teamId: string,
   ): Promise<void> {
     const { memberId } = requester;
 
-    await this.teamService.leaveTeam(teamId, memberId);
+    await this.teamService.deleteTeam(teamId, memberId);
+  }
+
+  @Post('/teams/:teamId/invitations')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
+  async inviteTeamMember(
+    @Requester() requester: MemberUser,
+    @Param('teamId') teamId: string,
+    @Body() dto: InviteTeamMemberRequestDto,
+  ): Promise<void> {
+    const { memberId } = requester;
+    const { studentNumber } = dto;
+
+    await this.teamService.inviteTeamMember(teamId, memberId, studentNumber);
+  }
+
+  @Delete('/teams/:teamId/invitations/:invitationId')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
+  async cancelTeamInvitation(
+    @Requester() requester: MemberUser,
+    @Param('teamId') teamId: string,
+    @Param('invitationId') invitationId: string,
+  ): Promise<void> {
+    const { memberId } = requester;
+
+    await this.teamService.cancelInvitation(teamId, memberId, invitationId);
+  }
+
+  @Delete('/teams:teamId/members/:memberId')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
+  async deleteTeamMember(
+    @Requester() requester: MemberUser,
+    @Param('teamId') teamId: string,
+    @Param('memberId') targetMemberId: string,
+  ): Promise<void> {
+    const { memberId } = requester;
+
+    await this.teamService.deleteTeamMember(teamId, memberId, targetMemberId);
   }
 
   @Put('/teams/:teamId/ideas')
+  @Roles([UserRole.MEMBER])
   @Transactional()
   async updateTeamIdea(
     @Requester() requester: MemberUser,

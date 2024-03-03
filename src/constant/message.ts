@@ -8,6 +8,7 @@ export const Message = {
   // 403 Forbidden
   FORBIDDEN_RESOURCE: '접근 권한이 없습니다.',
   ONLY_MEMBERS_CAN_WITHDRAW: '팀원만 팀의 참가 신청을 철회할 수 있습니다.',
+  ONLY_MEMBERS_CAN_UPDATE_TEAM: '팀원만 팀의 정보를 수정할 수 있습니다.',
   ONLY_MEMBERS_CAN_UPDATE_TEAM_IDEA:
     '팀원만 팀의 아이디어를 수정할 수 있습니다.',
   ONLY_MEMBERS_CAN_DELETE_ATTACHMENT: '팀원만 파일을 삭제할 수 있습니다.',
@@ -39,6 +40,7 @@ export const Message = {
   INVALID_OTP: '올바르지 않은 인증번호입니다.',
   USE_STUAUTH: '경희대학교 참가자는 StuAuth를 사용해서 인증을 진행해주세요.',
   CANNOT_USE_STUAUTH: '경희대학교 외 참가자는 StuAuth를 사용할 수 없습니다.',
+  ALREADY_EXIST_INVITATION: '이미 다른 팀에 초대된 참가자입니다.',
 
   // 500 Internal Server Error
   STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',
