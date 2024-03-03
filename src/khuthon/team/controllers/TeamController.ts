@@ -55,15 +55,17 @@ export class TeamController {
   }
 
   @Patch('/teams/:teamId')
+  @Roles([UserRole.MEMBER])
   @Transactional()
   async editTeam(
+    @Requester() requester: MemberUser,
     @Param('teamId') teamId: string,
     @Body() requestDto: EditTeamRequestDto,
   ): Promise<EditTeamResponseDto> {
-    // TODO[lery]: 인가 계층 구현 후 수정 필요
+    const { memberId } = requester;
     const { numbers, name, note } = requestDto;
 
-    const team = await this.teamService.editTeam(teamId, {
+    const team = await this.teamService.editTeam(teamId, memberId, {
       numbers,
       name,
       note,
@@ -74,23 +76,29 @@ export class TeamController {
 
   @Delete('/teams/:teamId')
   @Transactional()
-  async leaveTeam(@Param('teamId') teamId: string): Promise<void> {
-    // TODO[lery]: 인가 계층 구현 후 수정 필요
-    await this.teamService.leaveTeam(teamId, 'memberId');
+  async leaveTeam(
+    @Requester() requester: MemberUser,
+    @Param('teamId') teamId: string,
+  ): Promise<void> {
+    const { memberId } = requester;
+
+    await this.teamService.leaveTeam(teamId, memberId);
   }
 
   @Put('/teams/:teamId/ideas')
   @Transactional()
   async updateTeamIdea(
+    @Requester() requester: MemberUser,
     @Param('teamId') teamId: string,
     @Body() requestDto: UpdateTeamIdeaRequestDto,
   ): Promise<void> {
+    const { memberId } = requester;
     const { idea } = requestDto;
 
-    // TODO[lery]: 인가 계층 구현 후 수정 필요
-    await this.teamService.updateTeamIdea('memberId', teamId, idea);
+    await this.teamService.updateTeamIdea(teamId, memberId, idea);
   }
 
+  // TODO[lery]: 파일 업로드 API 구현 후 fileId로 처리하도록 수정하기
   @Post('/teams/:teamId/attachments')
   @Transactional()
   async issueAttachmentPresignedPost(
