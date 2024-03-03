@@ -7,10 +7,13 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
 
 import { Message } from '@khlug/constant/message';
+import { StuauthConfig } from '@khlug/khuthon/core/config/StuauthConfig';
+import { StuauthResponse } from '@khlug/khuthon/core/stuauth/StuauthResponse';
 
-import { StuauthConfig } from '../config/StuauthConfig';
-import { StuauthResponse } from './StuauthResponse';
-
+// !! [주의] !!
+// Stuauth는 외부에 API가 직접적으로 노출되지 않아야 합니다.
+// 따라서, Stuauth API의 응답이 직접적으로 API의 응답으로 반환되면 안됩니다.
+// 즉, Stuauth API에 요청과 응답 모두 백엔드 안에서 처리 후 완료되어야 합니다.
 @Injectable()
 export class StuauthAdapter {
   private readonly apiUri: string;

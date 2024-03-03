@@ -8,6 +8,7 @@ import { AccessTokenBuilder } from '@khlug/khuthon/core/token/AccessTokenBuilder
 import { RegisterMemberRequestDto } from '@khlug/khuthon/member/controllers/dto/RegisterMemberRequestDto';
 import { RegisterMemberResponseDto } from '@khlug/khuthon/member/controllers/dto/RegisterMemberResponseDto';
 import { UpdateStudentInfoRequestDto } from '@khlug/khuthon/member/controllers/dto/UpdateStudentInfoRequestDto';
+import { UpdateStudentInfoWithStuauthRequestDto } from '@khlug/khuthon/member/controllers/dto/UpdateStudentInfoWithStuauthRequestDto';
 import { VerifyMemberRequestDto } from '@khlug/khuthon/member/controllers/dto/VerifyMemberRequestDto';
 import { MemberService } from '@khlug/khuthon/member/services/MemberService';
 
@@ -60,5 +61,22 @@ export class MemberController {
       grade,
       phone,
     });
+  }
+
+  @Put('/members/student-info/stuauth')
+  @Roles([UserRole.MEMBER])
+  @Transactional()
+  async updateStudentInfoWithStuauth(
+    @Requester() requester: MemberUser,
+    @Body() dto: UpdateStudentInfoWithStuauthRequestDto,
+  ): Promise<void> {
+    const { memberId } = requester;
+    const { id, password } = dto;
+
+    await this.memberService.updateStudentInfoWithStuauth(
+      memberId,
+      id,
+      password,
+    );
   }
 }
