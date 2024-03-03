@@ -35,4 +35,9 @@ export const Message = {
   ALREADY_VOTED: '이미 투표했습니다.',
   INVALID_SMS_TARGET_MEMBER: '메시지를 보낼 대상을 정확하게 선택해주세요.',
   INVALID_OTP: '올바르지 않은 인증번호입니다.',
+  USE_STUAUTH: '경희대학교 참가자는 StuAuth를 사용해서 인증을 진행해주세요.',
+  CANNOT_USE_STUAUTH: '경희대학교 외 참가자는 StuAuth를 사용할 수 없습니다.',
+
+  // 500 Internal Server Error
+  STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',
 } as const;

@@ -3,12 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
-import { MemberState } from '@khlug/constant';
+import { MemberState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
 import { PasswordGenerator } from '@khlug/khuthon/common/PasswordGenerator';
 import { EmailSender } from '@khlug/khuthon/core/email/EmailSender';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { OtpGenerator } from '@khlug/khuthon/core/otp/OtpGenerator';
+import { StuauthAdapter } from '@khlug/khuthon/core/stuauth/StuauthAdapter';
 import { EmailVerificationEntity } from '@khlug/khuthon/entities/EmailVerificationEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 
@@ -26,6 +27,7 @@ export class MemberService {
     private readonly logger: KhuthonLogger,
     private readonly passwordGenerator: PasswordGenerator,
     private readonly otpGenerator: OtpGenerator,
+    private readonly stuauthAdapter: StuauthAdapter,
   ) {}
 
   async register(email: string, plainPassword: string): Promise<MemberEntity> {
@@ -123,6 +125,10 @@ export class MemberService {
       throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
     }
 
+    if (member.university === University.KYUNGHEE_UNIV) {
+      throw new UnprocessableEntityException(Message.USE_STUAUTH);
+    }
+
     if (member.state !== MemberState.NEED_STUDENT_INFO) {
       throw new UnprocessableEntityException(
         Message.CANNOT_UPDATE_STUDENT_INFO_NOW,
@@ -134,12 +140,65 @@ export class MemberService {
     member.college = studentInfo.college;
     member.grade = studentInfo.grade;
     member.phone = studentInfo.phone;
-
     member.state = MemberState.NEED_TEAM;
 
     await this.memberRepository.save(member);
     await this.logger.log(
       `'${member.email}'의 학적 정보가 업데이트 되었습니다.`,
+    );
+  }
+
+  async updateStudentInfoWithStuauth(
+    memberId: string,
+    info21Id: string,
+    info21Password: string,
+  ): Promise<void> {
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new UnprocessableEntityException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.university !== University.KYUNGHEE_UNIV) {
+      throw new UnprocessableEntityException(Message.CANNOT_USE_STUAUTH);
+    }
+
+    if (member.state !== MemberState.NEED_STUDENT_INFO) {
+      throw new UnprocessableEntityException(
+        Message.CANNOT_UPDATE_STUDENT_INFO_NOW,
+      );
+    }
+
+    const stuauthResponse = await this.stuauthAdapter.getStudentInfo(
+      info21Id,
+      info21Password,
+    );
+
+    // code가 100이 아니면 정상 응답이 아님
+    if (stuauthResponse.code !== 100) {
+      throw new UnprocessableEntityException(
+        decodeURIComponent(stuauthResponse.message),
+      );
+    }
+
+    const studentInfo = stuauthResponse.data;
+    const majorString = studentInfo.major
+      .map((major) =>
+        [major.college, major.department, major.major]
+          .filter((v) => !!v)
+          .join(' '),
+      )
+      .join(', ');
+
+    member.studentNumber = studentInfo.id.toString();
+    member.name = studentInfo.name;
+    member.college = majorString;
+    member.grade = studentInfo.grade;
+    member.phone = studentInfo.phone;
+    member.state = MemberState.NEED_TEAM;
+
+    await this.memberRepository.save(member);
+    await this.logger.log(
+      `'${member.email}'의 학적 정보가 Stuauth로 업데이트 되었습니다.`,
     );
   }
 }

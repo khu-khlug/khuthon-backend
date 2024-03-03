@@ -17,11 +17,13 @@ import { KhuthonLogger } from './log/KhuthonLogger';
 import { OtpGenerator } from './otp/OtpGenerator';
 import { S3Adapter } from './s3/S3Adapter';
 import { SmsSender } from './sms/SmsSender';
+import { StuauthAdapter } from './stuauth/StuauthAdapter';
 import { AccessTokenBuilder } from './token/AccessTokenBuilder';
 
 const exportableProviders = [
   KhuthonLogger,
   S3Adapter,
+  StuauthAdapter,
   SmsSender,
   EmailSender,
   OtpGenerator,
