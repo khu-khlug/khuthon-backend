@@ -13,6 +13,7 @@ export const Message = {
     '팀원만 팀의 아이디어를 수정할 수 있습니다.',
   ONLY_MEMBERS_CAN_DELETE_ATTACHMENT: '팀원만 파일을 삭제할 수 있습니다.',
   ONLY_MEMBERS_CAN_VOTE: '팀원만 투표할 수 있습니다.',
+  INVALID_CREDENTIALS: '이메일 또는 비밀번호가 올바르지 않습니다.',
 
   // 404 Not found
   NO_REGISTERING_EVENT: '접수 중인 행사가 없습니다.',
