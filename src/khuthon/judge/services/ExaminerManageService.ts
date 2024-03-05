@@ -7,7 +7,7 @@ import { PasswordGenerator } from '@khlug/khuthon/core/password/PasswordGenerato
 import { ExaminerEntity } from '@khlug/khuthon/entities/ExaminerEntity';
 
 @Injectable()
-export class ManagerExaminerService {
+export class ExaminerManageService {
   constructor(
     @InjectRepository(ExaminerEntity)
     private readonly examinerRepository: Repository<ExaminerEntity>,

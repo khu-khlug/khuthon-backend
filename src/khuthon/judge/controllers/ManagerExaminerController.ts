@@ -4,15 +4,13 @@ import { Transactional } from 'typeorm-transactional';
 import { Roles } from '@khlug/khuthon/core/auth/Roles';
 import { UserRole } from '@khlug/khuthon/core/auth/User';
 
-import { ManagerExaminerService } from '../services/ManagerExaminerService';
+import { ExaminerManageService } from '../services/ExaminerManageService';
 import { CreateExaminerRequestDto } from './dto/manager/CreateExaminerRequestDto';
 import { CreateExaminerResponseDto } from './dto/manager/CreateExaminerResponseDto';
 
 @Controller()
 export class ManagerExaminerController {
-  constructor(
-    private readonly managerExaminerService: ManagerExaminerService,
-  ) {}
+  constructor(private readonly managerExaminerService: ExaminerManageService) {}
 
   @Post('/manager/examiners')
   @Roles([UserRole.MANAGER])
