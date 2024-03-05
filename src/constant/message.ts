@@ -23,6 +23,7 @@ export const Message = {
   EXAMINER_NOT_FOUND: '해당되는 심사위원이 없습니다.',
   MEMBER_NOT_FOUND: '해당되는 참가자가 없습니다.',
   INVITATION_NOT_FOUND: '초대받은 팀이 없습니다',
+  ATTACHMENT_NOT_FOUND: '해당되는 자료가 없습니다.',
   EVENT_NOT_FOUND_ON_THIS_YEAR: '올해에는 아직 행사가 없습니다.',
 
   // 422 Unprocessable Entity
@@ -43,6 +44,8 @@ export const Message = {
   USE_STUAUTH: '경희대학교 참가자는 StuAuth를 사용해서 인증을 진행해주세요.',
   CANNOT_USE_STUAUTH: '경희대학교 외 참가자는 StuAuth를 사용할 수 없습니다.',
   ALREADY_EXIST_INVITATION: '이미 다른 팀에 초대된 참가자입니다.',
+  FILE_TOO_LARGE: '파일 크기가 너무 큽니다. 10MB 이하로 업로드해주세요.',
+  MEMBER_NO_TEAM: '속한 팀이 없습니다.',
 
   // 500 Internal Server Error
   STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',

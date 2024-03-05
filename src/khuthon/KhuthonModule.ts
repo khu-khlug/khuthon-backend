@@ -12,6 +12,8 @@ import { NoticeEntity } from './entities/NoticeEntity';
 import { TeamEntity } from './entities/TeamEntity';
 import { VoteEntity } from './entities/VoteEntity';
 import { EventService } from './event/services/EventService';
+import { FileController } from './file/controllers/FileController';
+import { FileService } from './file/services/FileService';
 import { LoginController } from './login/controllers/LoginController';
 import { LoginService } from './login/services/LoginService';
 import { MemberController } from './member/controllers/MemberController';
@@ -47,6 +49,7 @@ import { VoteService } from './vote/services/VoteService';
     ManagerNoticeController,
     MemberController,
     LoginController,
+    FileController,
   ],
   providers: [
     TeamService,
@@ -56,6 +59,7 @@ import { VoteService } from './vote/services/VoteService';
     NoticeService,
     MemberService,
     LoginService,
+    FileService,
   ],
 })
 export class KhuthonModule {}

@@ -14,10 +14,11 @@ import { Roles } from '@khlug/khuthon/core/auth/Roles';
 import { MemberUser, UserRole } from '@khlug/khuthon/core/auth/User';
 import { TeamService } from '@khlug/khuthon/team/services/TeamService';
 
+import { CreateAttachmentRequestDto } from './dto/member/CreateAttachmentRequestDto';
+import { CreateAttachmentResponseDto } from './dto/member/CreateAttachmentResponseDto';
 import { EditTeamRequestDto } from './dto/member/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/member/EditTeamResponseDto';
 import { InviteTeamMemberRequestDto } from './dto/member/InviteTeamMemberRequestDto';
-import { IssueAttachmentPresignedPostResponseDto } from './dto/member/IssueAttachmentPresignedPostResponseDto';
 import { JoinTeamResponseDto } from './dto/member/JoinTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/member/RegisterTeamRequestDto';
 import { RegisterTeamResponseDto } from './dto/member/RegisterTeamResponseDto';
@@ -140,14 +141,25 @@ export class TeamController {
     await this.teamService.updateTeamIdea(teamId, memberId, idea);
   }
 
-  // TODO[lery]: 파일 업로드 API 구현 후 fileId로 처리하도록 수정하기
   @Post('/teams/:teamId/attachments')
   @Transactional()
-  async issueAttachmentPresignedPost(
+  async uploadAttachment(
     @Param('teamId') teamId: string,
-  ): Promise<IssueAttachmentPresignedPostResponseDto> {
-    const presignedPost =
-      await this.teamService.issueAttachmentUploadUrl(teamId);
-    return presignedPost;
+    @Body() dto: CreateAttachmentRequestDto,
+  ): Promise<CreateAttachmentResponseDto> {
+    const { fileId } = dto;
+
+    const attachment = await this.teamService.uploadAttachment(teamId, fileId);
+
+    return new CreateAttachmentResponseDto(attachment);
+  }
+
+  @Delete('/teams/:teamId/attachments/:attachmentId')
+  @Transactional()
+  async deleteAttachment(
+    @Param('teamId') teamId: string,
+    @Param('attachmentId') attachmentId: string,
+  ): Promise<void> {
+    await this.teamService.deleteAttachment(teamId, attachmentId);
   }
 }

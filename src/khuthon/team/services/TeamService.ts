@@ -1,4 +1,3 @@
-import { PresignedPost } from '@aws-sdk/s3-presigned-post';
 import {
   ForbiddenException,
   Injectable,
@@ -14,6 +13,7 @@ import { Message } from '@khlug/constant/message';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
 import { SmsSender } from '@khlug/khuthon/core/sms/SmsSender';
+import { AttachmentEntity } from '@khlug/khuthon/entities/AttachmentEntity';
 import { FileEntity } from '@khlug/khuthon/entities/FileEntity';
 import { InvitationEntity } from '@khlug/khuthon/entities/InvitationEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
@@ -34,6 +34,8 @@ export class TeamService {
     private readonly memberRepository: Repository<MemberEntity>,
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
+    @InjectRepository(AttachmentEntity)
+    private readonly attachmentRepository: Repository<AttachmentEntity>,
     @InjectRepository(InvitationEntity)
     private readonly invitationRepository: Repository<InvitationEntity>,
 
@@ -408,37 +410,10 @@ export class TeamService {
     );
   }
 
-  async issueAttachmentUploadUrl(
+  async uploadAttachment(
     teamId: string,
-  ): Promise<{ fileId: string } & PresignedPost> {
-    const event = await this.eventService.getThisYearEvent();
-    if (!event.isOngoing()) {
-      throw new UnprocessableEntityException(
-        Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
-      );
-    }
-
-    const team = await this.teamRepository.findOneBy({ id: teamId });
-    if (!team) {
-      throw new NotFoundException(Message.TEAM_NOT_FOUND);
-    }
-
-    const fileKey = `attachments/${team.id}/${ulid()}.pdf`;
-    const presignedPost = await this.s3Adapter.getPresignedPost(fileKey);
-
-    const newFile = this.fileRepository.create({
-      id: ulid(),
-      teamId,
-      fileKey,
-    });
-    await this.fileRepository.save(newFile);
-
-    await this.logger.log(`${team.name} 팀에서 자료를 제출했습니다.`);
-
-    return { fileId: newFile.id, ...presignedPost };
-  }
-
-  async deleteAttachment(teamId: string, fileId: string): Promise<void> {
+    fileId: string,
+  ): Promise<AttachmentEntity> {
     const event = await this.eventService.getThisYearEvent();
     if (!event.isOngoing()) {
       throw new UnprocessableEntityException(
@@ -460,7 +435,53 @@ export class TeamService {
       throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_DELETE_ATTACHMENT);
     }
 
+    const attachment = this.attachmentRepository.create({
+      id: ulid(),
+      teamId: team.id,
+      fileId: file.id,
+    });
+    await this.attachmentRepository.save(attachment);
+
+    await this.logger.log(`${team.name} 팀에서 자료를 제출했습니다.`);
+
+    return attachment;
+  }
+
+  async deleteAttachment(teamId: string, attachmentId: string): Promise<void> {
+    const event = await this.eventService.getThisYearEvent();
+    if (!event.isOngoing()) {
+      throw new UnprocessableEntityException(
+        Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
+      );
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const attachment = await this.attachmentRepository.findOneBy({
+      id: attachmentId,
+    });
+    if (!attachment) {
+      throw new NotFoundException(Message.ATTACHMENT_NOT_FOUND);
+    }
+
+    if (attachment.teamId !== team.id) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_DELETE_ATTACHMENT);
+    }
+
+    const file = await this.fileRepository.findOneBy({ id: attachment.fileId });
+    if (!file) {
+      throw new NotFoundException(Message.FILE_NOT_FOUND);
+    }
+
+    if (file.teamId !== team.id) {
+      throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_DELETE_ATTACHMENT);
+    }
+
     await this.s3Adapter.deleteObject(file.fileKey);
+    await this.attachmentRepository.delete(attachment.id);
     await this.fileRepository.delete(file.id);
 
     await this.logger.log(`${team.name} 팀에서 자료를 삭제했습니다.`);

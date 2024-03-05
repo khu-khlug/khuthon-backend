@@ -5,8 +5,8 @@ export class FileEntity {
   @PrimaryColumn('string', { length: 100 })
   id!: string;
 
-  @Column('string', { length: 100 })
-  teamId!: string;
+  @Column('string', { length: 100, nullable: true })
+  teamId!: string | null;
 
   @Column('string', { length: 200 })
   fileKey!: string;
