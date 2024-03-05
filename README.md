@@ -5,6 +5,7 @@
 ## Prerequirements
 
 - Node.js v20.11.1
+- Docker
 
 ## Installation
 
@@ -16,8 +17,7 @@ npm install
 ## Run
 
 ```shell
-npm run build
-npm run start:prod
+docker compose up
 ```
 
 ## License
