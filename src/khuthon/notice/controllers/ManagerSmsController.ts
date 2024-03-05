@@ -12,7 +12,7 @@ import { SendSmsToMembersResponseDto } from './dto/manager/SendSmsToMembersRespo
 export class ManagerSmsController {
   constructor(private readonly smsService: SmsService) {}
 
-  @Post('/send-sms')
+  @Post('/manager/send-sms')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async sendSmsToMembers(

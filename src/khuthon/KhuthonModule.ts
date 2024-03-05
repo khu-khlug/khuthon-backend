@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from './core/CoreModule';
 import { EmailVerificationEntity } from './entities/EmailVerificationEntity';
 import { EventEntity } from './entities/EventEntity';
+import { ExaminerEntity } from './entities/ExaminerEntity';
 import { FileEntity } from './entities/FileEntity';
 import { InvitationEntity } from './entities/InvitationEntity';
 import { JudgeEntity } from './entities/JudgeEntity';
@@ -14,6 +15,8 @@ import { VoteEntity } from './entities/VoteEntity';
 import { EventService } from './event/services/EventService';
 import { FileController } from './file/controllers/FileController';
 import { FileService } from './file/services/FileService';
+import { ManagerExaminerController } from './judge/controllers/ManagerExaminerController';
+import { ManagerExaminerService } from './judge/services/ManagerExaminerService';
 import { LoginController } from './login/controllers/LoginController';
 import { LoginService } from './login/services/LoginService';
 import { MemberController } from './member/controllers/MemberController';
@@ -39,6 +42,7 @@ import { VoteService } from './vote/services/VoteService';
       JudgeEntity,
       EmailVerificationEntity,
       InvitationEntity,
+      ExaminerEntity,
     ]),
     CoreModule,
   ],
@@ -50,6 +54,7 @@ import { VoteService } from './vote/services/VoteService';
     MemberController,
     LoginController,
     FileController,
+    ManagerExaminerController,
   ],
   providers: [
     TeamService,
@@ -60,6 +65,7 @@ import { VoteService } from './vote/services/VoteService';
     MemberService,
     LoginService,
     FileService,
+    ManagerExaminerService,
   ],
 })
 export class KhuthonModule {}

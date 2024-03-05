@@ -6,8 +6,8 @@ import { Roles } from '@khlug/khuthon/core/auth/Roles';
 import { ExaminerUser, UserRole } from '@khlug/khuthon/core/auth/User';
 
 import { JudgeService } from '../services/JudgeService';
-import { JudgeRequestDto } from './dto/JudgeRequestDto';
-import { JudgeResponseDto } from './dto/JudgeResponseDto';
+import { JudgeRequestDto } from './dto/examiner/JudgeRequestDto';
+import { JudgeResponseDto } from './dto/examiner/JudgeResponseDto';
 
 @Controller()
 export class JudgeController {

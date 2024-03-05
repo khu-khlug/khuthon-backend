@@ -14,7 +14,7 @@ import { UpdateNoticeResponseDto } from './dto/manager/UpdateNoticeResponseDto';
 export class ManagerNoticeController {
   constructor(private readonly noticeService: NoticeService) {}
 
-  @Post('/notices')
+  @Post('/manager/notices')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async createNotice(
@@ -27,7 +27,7 @@ export class ManagerNoticeController {
     return new CreateNoticeResponseDto(notice);
   }
 
-  @Put('/notices/:noticeId')
+  @Put('/manager/notices/:noticeId')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async updateNotice(
@@ -45,7 +45,7 @@ export class ManagerNoticeController {
     return new UpdateNoticeResponseDto(notice);
   }
 
-  @Delete('/notices/:noticeId')
+  @Delete('/manager/notices/:noticeId')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async deleteNotice(@Param('noticeId') noticeId: string): Promise<void> {

@@ -12,7 +12,7 @@ import { UpdateTeamPrizeRequestDto } from './dto/manager/UpdateTeamPrizeRequestD
 export class ManagerTeamController {
   constructor(private readonly teamManageService: TeamManageService) {}
 
-  @Put('/teams/:teamId/ideas')
+  @Put('/manager/teams/:teamId/ideas')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async updateTeamIdea(
@@ -23,7 +23,7 @@ export class ManagerTeamController {
     await this.teamManageService.updateTeamIdea(teamId, idea);
   }
 
-  @Put('/teams/:teamId/prizes')
+  @Put('/manager/teams/:teamId/prizes')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async updateTeamPrize(
@@ -34,7 +34,7 @@ export class ManagerTeamController {
     await this.teamManageService.updateTeamPrize(teamId, prize);
   }
 
-  @Delete('/teams/:teamId')
+  @Delete('/manager/teams/:teamId')
   @Roles([UserRole.MANAGER])
   @Transactional()
   async leaveTeam(@Param('teamId') teamId: string): Promise<void> {

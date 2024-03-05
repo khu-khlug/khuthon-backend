@@ -20,7 +20,7 @@ export class ExaminerEntity {
   @Column('varchar', { length: 100 })
   codeHash!: string;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 110 })
   name!: string;
 
   @CreateDateColumn({ type: 'datetime' })
