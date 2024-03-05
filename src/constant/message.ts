@@ -46,6 +46,7 @@ export const Message = {
   ALREADY_EXIST_INVITATION: '이미 다른 팀에 초대된 참가자입니다.',
   FILE_TOO_LARGE: '파일 크기가 너무 큽니다. 10MB 이하로 업로드해주세요.',
   MEMBER_NO_TEAM: '속한 팀이 없습니다.',
+  INVALID_YEAR: '올해 대회와 다른 연도의 대회의 정보에 접근할 수 없습니다.',
 
   // 500 Internal Server Error
   STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',

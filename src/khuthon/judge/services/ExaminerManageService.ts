@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
-import { PasswordGenerator } from '@khlug/khuthon/core/password/PasswordGenerator';
+import { ExaminerCodeGenerator } from '@khlug/khuthon/core/password/ExaminerCodeGenerator';
 import { ExaminerEntity } from '@khlug/khuthon/entities/ExaminerEntity';
 
 @Injectable()
@@ -12,19 +12,18 @@ export class ExaminerManageService {
     @InjectRepository(ExaminerEntity)
     private readonly examinerRepository: Repository<ExaminerEntity>,
 
-    private readonly passwordGenerator: PasswordGenerator,
+    private readonly codeGenerator: ExaminerCodeGenerator,
   ) {}
 
   async createExaminer(name: string, code: string): Promise<ExaminerEntity> {
     const year = new Date().getFullYear();
-    const password = this.passwordGenerator.generate(code);
+    const codeHash = this.codeGenerator.generate(code);
 
     const newExaminer = this.examinerRepository.create({
       id: ulid(),
       year,
       name,
-      codeHash: password.hash,
-      codeSalt: password.salt,
+      codeHash,
     });
     await this.examinerRepository.save(newExaminer);
 

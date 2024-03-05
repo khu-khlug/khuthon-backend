@@ -19,6 +19,7 @@ import { EmailSender } from './email/EmailSender';
 import { KhuthonLogEntity } from './log/KhuthonLogEntity';
 import { KhuthonLogger } from './log/KhuthonLogger';
 import { OtpGenerator } from './otp/OtpGenerator';
+import { ExaminerCodeGenerator } from './password/ExaminerCodeGenerator';
 import { PasswordGenerator } from './password/PasswordGenerator';
 import { S3Adapter } from './s3/S3Adapter';
 import { SmsSender } from './sms/SmsSender';
@@ -34,6 +35,7 @@ const exportableProviders = [
   OtpGenerator,
   PasswordGenerator,
   AccessTokenBuilder,
+  ExaminerCodeGenerator,
 ];
 
 @Module({

@@ -15,9 +15,6 @@ export class ExaminerEntity {
   year!: number;
 
   @Column('varchar', { length: 100 })
-  codeSalt!: string;
-
-  @Column('varchar', { length: 100 })
   codeHash!: string;
 
   @Column('varchar', { length: 110 })

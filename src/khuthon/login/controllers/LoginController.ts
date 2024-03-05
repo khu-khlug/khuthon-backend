@@ -1,19 +1,36 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 
 import { LoginService } from '../services/LoginService';
-import { LoginRequestDto } from './dto/member/LoginRequestDto';
+import { LoginAsExaminerRequestDto } from './dto/examiner/LoginAsExaminerRequestDto';
+import { LoginAsExaminerResponseDto } from './dto/examiner/LoginAsExaminerResponseDto';
+import { LoginAsMemberRequestDto } from './dto/member/LoginAsMemberRequestDto';
+import { LoginAsMemberResponseDto } from './dto/member/LoginAsMemberResponseDto';
 
 @Controller()
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @Post('/login')
+  @Post('/member/login')
   @HttpCode(200)
-  async login(@Body() dto: LoginRequestDto) {
+  async loginAsMember(
+    @Body() dto: LoginAsMemberRequestDto,
+  ): Promise<LoginAsMemberResponseDto> {
     const { email, password } = dto;
 
     const token = await this.loginService.loginAsMember(email, password);
 
-    return { token };
+    return new LoginAsMemberResponseDto(token);
+  }
+
+  @Post('/examiner/login')
+  @HttpCode(200)
+  async loginAsExaminer(
+    @Body() dto: LoginAsExaminerRequestDto,
+  ): Promise<LoginAsExaminerResponseDto> {
+    const { code } = dto;
+
+    const token = await this.loginService.loginAsExaminer(code);
+
+    return new LoginAsExaminerResponseDto(token);
   }
 }
