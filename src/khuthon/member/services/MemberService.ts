@@ -63,7 +63,6 @@ export class MemberService {
       `'${email}'로 등록 시도가 발생하여 이메일 인증을 시작합니다.`,
     );
 
-    // TODO[lery]: OTP 이메일 템플릿 시간 되면 구현하기
     await this.emailSender.send(
       email,
       '[khuthon] 대회 참가를 위해 이메일을 인증해주세요.',
