@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Message } from '@khlug/constant/message';
-import { PasswordGenerator } from '@khlug/khuthon/common/PasswordGenerator';
+import { PasswordGenerator } from '@khlug/khuthon/core/password/PasswordGenerator';
 import { AccessTokenBuilder } from '@khlug/khuthon/core/token/AccessTokenBuilder';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
 

@@ -16,3 +16,8 @@ export const EmailDomain: Record<University, string> = {
   [University.KYUNGHEE_UNIV]: 'khu.ac.kr',
   [University.AJOU_UNIV]: 'ajou.ac.kr',
 };
+
+export const ClsStoreKey = {
+  IP: 'khuthon/req-ip',
+  USER_AGENT: 'khuthon/req-ua',
+} as const;

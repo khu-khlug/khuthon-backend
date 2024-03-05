@@ -5,10 +5,10 @@ import { ulid } from 'ulid';
 
 import { MemberState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
-import { PasswordGenerator } from '@khlug/khuthon/common/PasswordGenerator';
 import { EmailSender } from '@khlug/khuthon/core/email/EmailSender';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { OtpGenerator } from '@khlug/khuthon/core/otp/OtpGenerator';
+import { PasswordGenerator } from '@khlug/khuthon/core/password/PasswordGenerator';
 import { StuauthAdapter } from '@khlug/khuthon/core/stuauth/StuauthAdapter';
 import { EmailVerificationEntity } from '@khlug/khuthon/entities/EmailVerificationEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
