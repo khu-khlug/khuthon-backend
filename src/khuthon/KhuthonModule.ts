@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CoreModule } from './core/CoreModule';
+import { AttachmentEntity } from './entities/AttachmentEntity';
 import { EmailVerificationEntity } from './entities/EmailVerificationEntity';
 import { EventEntity } from './entities/EventEntity';
 import { ExaminerEntity } from './entities/ExaminerEntity';
@@ -45,6 +46,7 @@ import { VoteService } from './vote/services/VoteService';
       EmailVerificationEntity,
       InvitationEntity,
       ExaminerEntity,
+      AttachmentEntity,
     ]),
     CoreModule,
   ],

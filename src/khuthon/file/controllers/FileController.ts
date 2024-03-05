@@ -1,6 +1,6 @@
 import {
+  Controller,
   FileTypeValidator,
-  Injectable,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -23,7 +23,7 @@ import { FileService } from '@khlug/khuthon/file/services/FileService';
 const _10MB = 10 * 1024 * 1024;
 const mimeTypes = ['application/pdf', 'image/jpeg', 'image/png'];
 
-@Injectable()
+@Controller()
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
