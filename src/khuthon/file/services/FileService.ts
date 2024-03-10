@@ -33,6 +33,7 @@ export class FileService {
     const newFile = this.fileRepository.create({
       id: ulid(),
       teamId,
+      fileName: file.originalname,
       fileKey,
     });
     await this.fileRepository.save(newFile);

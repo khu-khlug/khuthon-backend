@@ -9,6 +9,9 @@ export class FileEntity {
   teamId!: string | null;
 
   @Column('string', { length: 200 })
+  fileName!: string;
+
+  @Column('string', { length: 200 })
   fileKey!: string;
 
   @CreateDateColumn('datetime')
