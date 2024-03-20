@@ -28,9 +28,8 @@ export class LoggingInterceptor implements NestInterceptor {
     const path = request.url;
     const body = request.body;
 
-    const bodyLog = shouldNotLogBody
-      ? ''
-      : `\n${JSON.stringify(body, null, 2)}`;
+    const bodyLog =
+      shouldNotLogBody || !body ? '' : `\n${JSON.stringify(body, null, 2)}`;
     this.logger.log(
       `Request to '${method} ${path}'${bodyLog}`,
       `traceId='${traceId}'`,
