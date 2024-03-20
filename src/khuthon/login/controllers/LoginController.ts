@@ -1,5 +1,7 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 
+import { NoBodyLog } from '@khlug/logging/NoBodyLog';
+
 import { LoginService } from '../services/LoginService';
 import { LoginAsExaminerRequestDto } from './dto/examiner/LoginAsExaminerRequestDto';
 import { LoginAsExaminerResponseDto } from './dto/examiner/LoginAsExaminerResponseDto';
@@ -11,6 +13,7 @@ export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
   @Post('/member/login')
+  @NoBodyLog()
   @HttpCode(200)
   async loginAsMember(
     @Body() dto: LoginAsMemberRequestDto,

@@ -11,6 +11,7 @@ import { UpdateStudentInfoRequestDto } from '@khlug/khuthon/member/controllers/d
 import { UpdateStudentInfoWithStuauthRequestDto } from '@khlug/khuthon/member/controllers/dto/UpdateStudentInfoWithStuauthRequestDto';
 import { VerifyMemberRequestDto } from '@khlug/khuthon/member/controllers/dto/VerifyMemberRequestDto';
 import { MemberService } from '@khlug/khuthon/member/services/MemberService';
+import { NoBodyLog } from '@khlug/logging/NoBodyLog';
 
 import { GetMemberResponseDto } from './dto/GetMemberResponseDto';
 
@@ -32,6 +33,7 @@ export class MemberController {
   }
 
   @Post('/members')
+  @NoBodyLog()
   @Transactional()
   async registerMember(
     @Body() dto: RegisterMemberRequestDto,
@@ -76,6 +78,7 @@ export class MemberController {
   }
 
   @Put('/members/student-info/stuauth')
+  @NoBodyLog()
   @Roles([UserRole.MEMBER])
   @Transactional()
   async updateStudentInfoWithStuauth(
