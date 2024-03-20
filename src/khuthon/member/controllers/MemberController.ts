@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
 import { Requester } from '@khlug/khuthon/core/auth/Requester';
@@ -12,12 +12,24 @@ import { UpdateStudentInfoWithStuauthRequestDto } from '@khlug/khuthon/member/co
 import { VerifyMemberRequestDto } from '@khlug/khuthon/member/controllers/dto/VerifyMemberRequestDto';
 import { MemberService } from '@khlug/khuthon/member/services/MemberService';
 
+import { GetMemberResponseDto } from './dto/GetMemberResponseDto';
+
 @Controller()
 export class MemberController {
   constructor(
     private readonly memberService: MemberService,
     private readonly tokenBuilder: AccessTokenBuilder,
   ) {}
+
+  @Get('/member')
+  @Roles([UserRole.MEMBER])
+  async getMember(
+    @Requester() requester: MemberUser,
+  ): Promise<GetMemberResponseDto> {
+    const { memberId } = requester;
+    const member = await this.memberService.getMember(memberId);
+    return GetMemberResponseDto.buildFromEntity(member);
+  }
 
   @Post('/members')
   @Transactional()

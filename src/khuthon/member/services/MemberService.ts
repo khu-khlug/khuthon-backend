@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
@@ -29,6 +33,16 @@ export class MemberService {
     private readonly otpGenerator: OtpGenerator,
     private readonly stuauthAdapter: StuauthAdapter,
   ) {}
+
+  async getMember(memberId: string): Promise<MemberEntity> {
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+
+    if (!member) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    return member;
+  }
 
   async register(email: string, plainPassword: string): Promise<MemberEntity> {
     const year = new Date().getFullYear();
