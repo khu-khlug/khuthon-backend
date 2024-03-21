@@ -14,6 +14,6 @@ export class KhuthonLogEntity {
   @Column('varchar', { length: 200 })
   userAgent!: string | null;
 
-  @CreateDateColumn('datetime')
+  @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 }

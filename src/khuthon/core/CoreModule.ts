@@ -55,6 +55,7 @@ const exportableProviders = [
       },
     }),
     TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const config = configService.get<DatabaseConfig>('database');
         if (!config) {
@@ -68,9 +69,10 @@ const exportableProviders = [
           username: config.user,
           password: config.password,
           database: config.database,
+          synchronize: config.synchronize,
+          autoLoadEntities: true,
         };
       },
-      inject: [ConfigService],
       dataSourceFactory: async (option) => {
         if (!option) {
           throw new Error('Database configuration is not found');
