@@ -11,10 +11,10 @@ export class EmailSender {
     const config = configService.get('sendgrid') as SendgridConfig;
 
     const client = new SendgridClient();
+    client.setApiKey(config.apiKey);
     client.setDefaultRequest('baseUrl', config.baseUrl);
 
     sendgrid.setClient(client);
-    sendgrid.setApiKey(config.apiKey);
   }
 
   // TODO[lery]: 이후 템플릿 적용하여 메일 보내기

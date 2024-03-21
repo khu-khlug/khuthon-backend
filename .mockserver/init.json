@@ -28,7 +28,7 @@
   {
     "httpRequest": {
       "method": "POST",
-      "path": "/sendgrid"
+      "path": "/sendgrid/v3/mail/send"
     },
     "httpResponse": {
       "body": {},
