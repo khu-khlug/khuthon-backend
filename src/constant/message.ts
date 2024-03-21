@@ -1,6 +1,7 @@
 export const Message = {
   // 400 Bad Request
   INVALID_VOTE_DEST_TEAM: '투표할 팀을 정확하게 선택해주세요.',
+  INVALID_EMAIL_DOMAIN: '이메일 도메인이 올바르지 않습니다.',
 
   // 401 Unauthorized
   TOKEN_REQUIRED: '토큰이 필요합니다.',

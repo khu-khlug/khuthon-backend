@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
-import { MemberState, University } from '@khlug/constant';
+import { EmailDomain, MemberState, University } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
 import { EmailSender } from '@khlug/khuthon/core/email/EmailSender';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
@@ -53,6 +53,13 @@ export class MemberService {
     }
 
     const password = this.passwordGenerator.generate(plainPassword);
+    const university = (Object.entries(EmailDomain).find(([, domain]) =>
+      email.endsWith(domain),
+    )?.[0] ?? null) as University | null;
+
+    if (!university) {
+      throw new UnprocessableEntityException(Message.INVALID_EMAIL_DOMAIN);
+    }
 
     const newMember = this.memberRepository.create({
       id: ulid(),
@@ -61,6 +68,7 @@ export class MemberService {
       passwordHash: password.hash,
       passwordSalt: password.salt,
       state: MemberState.NEED_VERIFICATION,
+      university,
     });
     await this.memberRepository.save(newMember);
 
