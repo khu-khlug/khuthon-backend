@@ -49,7 +49,18 @@ export class MemberService {
 
     const prevMember = await this.memberRepository.findOneBy({ year, email });
     if (prevMember) {
-      throw new UnprocessableEntityException(Message.ALREADY_REGISTERED_MEMBER);
+      const password = this.passwordGenerator.generate(
+        plainPassword,
+        prevMember.passwordSalt,
+      );
+
+      if (prevMember.passwordHash !== password.hash) {
+        throw new UnprocessableEntityException(
+          Message.ALREADY_REGISTERED_MEMBER,
+        );
+      }
+
+      return prevMember;
     }
 
     const password = this.passwordGenerator.generate(plainPassword);
