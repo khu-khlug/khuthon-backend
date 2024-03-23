@@ -17,6 +17,7 @@ export class S3Adapter {
     const config = configService.get('s3') as S3Config;
 
     this.client = new S3Client({
+      endpoint: config.endpoint,
       region: config.region,
       credentials: {
         accessKeyId: config.accessKeyId,
