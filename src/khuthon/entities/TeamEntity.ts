@@ -23,7 +23,7 @@ export class TeamEntity {
   @Column('varchar', { length: 1010 })
   note!: string;
 
-  @Column('varchar', { length: 110 })
+  @Column('varchar', { length: 110, nullable: true })
   prize!: string | null;
 
   @CreateDateColumn({ type: 'datetime' })
