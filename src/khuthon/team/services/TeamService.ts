@@ -48,7 +48,7 @@ export class TeamService {
   async registerTeam(memberId: string, teamName: string): Promise<TeamEntity> {
     const year = new Date().getFullYear();
 
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -118,7 +118,7 @@ export class TeamService {
   }
 
   async deleteTeam(teamId: string, memberId: string): Promise<void> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -156,7 +156,7 @@ export class TeamService {
     memberId: string,
     params: EditTeamParams,
   ): Promise<TeamEntity> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -197,7 +197,7 @@ export class TeamService {
     memberId: string,
     studentNumber: string,
   ) {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -251,7 +251,7 @@ export class TeamService {
     memberId: string,
     invitationId: string,
   ) {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -289,7 +289,7 @@ export class TeamService {
   }
 
   async joinTeam(memberId: string): Promise<TeamEntity> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -340,7 +340,7 @@ export class TeamService {
     memberId: string,
     targetMemberId: string,
   ) {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isRegistering()) {
       throw new NotFoundException(Message.NO_REGISTERING_EVENT);
     }
@@ -384,7 +384,7 @@ export class TeamService {
     memberId: string,
     idea: string,
   ): Promise<void> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isOngoing()) {
       throw new NotFoundException(Message.CANNOT_EDIT_NOW);
     }
@@ -414,7 +414,7 @@ export class TeamService {
     teamId: string,
     fileId: string,
   ): Promise<AttachmentEntity> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isOngoing()) {
       throw new UnprocessableEntityException(
         Message.CANNOT_SUBMIT_ATTACHMENT_NOW,
@@ -448,7 +448,7 @@ export class TeamService {
   }
 
   async deleteAttachment(teamId: string, attachmentId: string): Promise<void> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isOngoing()) {
       throw new UnprocessableEntityException(
         Message.CANNOT_SUBMIT_ATTACHMENT_NOW,

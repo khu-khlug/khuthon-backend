@@ -35,7 +35,7 @@ export class VoteService {
     memberId: string,
     destTeamIds: string[],
   ): Promise<void> {
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isJudging()) {
       throw new UnprocessableEntityException(Message.CANNOT_VOTE_NOW);
     }

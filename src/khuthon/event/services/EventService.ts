@@ -12,7 +12,7 @@ export class EventService {
     private readonly eventRepository: Repository<EventEntity>,
   ) {}
 
-  async getThisYearEvent(): Promise<EventEntity> {
+  async getThisYearEventOrThrowError(): Promise<EventEntity> {
     const year = new Date().getFullYear();
 
     const event = await this.eventRepository.findOneBy({ year });

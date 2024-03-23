@@ -37,7 +37,7 @@ export class JudgeService {
   ): Promise<JudgeEntity> {
     const year = new Date().getFullYear();
 
-    const event = await this.eventService.getThisYearEvent();
+    const event = await this.eventService.getThisYearEventOrThrowError();
     if (!event.isJudging()) {
       throw new UnprocessableEntityException(Message.CANNOT_JUDGE_NOW);
     }

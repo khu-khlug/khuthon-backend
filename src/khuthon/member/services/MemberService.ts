@@ -16,6 +16,7 @@ import { PasswordGenerator } from '@khlug/khuthon/core/password/PasswordGenerato
 import { StuauthAdapter } from '@khlug/khuthon/core/stuauth/StuauthAdapter';
 import { EmailVerificationEntity } from '@khlug/khuthon/entities/EmailVerificationEntity';
 import { MemberEntity } from '@khlug/khuthon/entities/MemberEntity';
+import { EventService } from '@khlug/khuthon/event/services/EventService';
 
 const _5_MINUTES = 5 * 60 * 1000;
 
@@ -32,6 +33,7 @@ export class MemberService {
     private readonly passwordGenerator: PasswordGenerator,
     private readonly otpGenerator: OtpGenerator,
     private readonly stuauthAdapter: StuauthAdapter,
+    private readonly eventService: EventService,
   ) {}
 
   async getMember(memberId: string): Promise<MemberEntity> {
@@ -45,6 +47,11 @@ export class MemberService {
   }
 
   async register(email: string, plainPassword: string): Promise<MemberEntity> {
+    const event = await this.eventService.getThisYearEventOrThrowError();
+    if (!event.isRegistering()) {
+      throw new UnprocessableEntityException(Message.NO_REGISTERING_EVENT);
+    }
+
     const year = new Date().getFullYear();
 
     const prevMember = await this.memberRepository.findOneBy({ year, email });
