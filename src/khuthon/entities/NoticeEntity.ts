@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Notice')
 export class NoticeEntity {
   @PrimaryColumn('varchar', { length: 100 })
   id!: string;

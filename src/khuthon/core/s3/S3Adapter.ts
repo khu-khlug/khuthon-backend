@@ -32,7 +32,6 @@ export class S3Adapter {
       Bucket: this.bucket,
       Key: fileKey,
       Body: buffer,
-      ACL: 'public-read',
     });
     await this.client.send(command);
   }

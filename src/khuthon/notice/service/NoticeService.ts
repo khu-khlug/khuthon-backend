@@ -4,8 +4,9 @@ import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
 import { Message } from '@khlug/constant/message';
-import { NoticeEntity } from '@khlug/khuthon/entities/NoticeEntity';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
+import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
+import { NoticeEntity } from '@khlug/khuthon/entities/NoticeEntity';
 
 @Injectable()
 export class NoticeService {
@@ -14,6 +15,7 @@ export class NoticeService {
     private readonly noticeRepository: Repository<NoticeEntity>,
 
     private readonly logger: KhuthonLogger,
+    private readonly s3Adapter: S3Adapter,
   ) {}
 
   async createNotice(title: string, content: string): Promise<NoticeEntity> {
@@ -25,6 +27,7 @@ export class NoticeService {
     await this.noticeRepository.save(newNotice);
 
     await this.logger.log(`관리자가 새로운 공지 사항을 작성했습니다.`);
+    await this.replicateNoticeListToS3();
 
     return newNotice;
   }
@@ -44,6 +47,7 @@ export class NoticeService {
     await this.noticeRepository.save(notice);
 
     await this.logger.log(`관리자가 공지 사항(${noticeId})을 수정했습니다.`);
+    await this.replicateNoticeListToS3();
 
     return notice;
   }
@@ -57,5 +61,20 @@ export class NoticeService {
     await this.noticeRepository.remove(notice);
 
     await this.logger.log(`관리자가 공지 사항(${noticeId})을 삭제했습니다.`);
+    await this.replicateNoticeListToS3();
+  }
+
+  private async replicateNoticeListToS3(): Promise<void> {
+    const notices = await this.noticeRepository
+      .createQueryBuilder()
+      .select(['id', 'title', 'createdAt'])
+      .orderBy('createdAt', 'DESC')
+      .getRawMany();
+    const noticeList = JSON.stringify(notices);
+    console.log(noticeList);
+    const noticeListBuffer = Buffer.from(noticeList, 'utf8');
+
+    const fileKey = 'notice.json';
+    await this.s3Adapter.uploadObject(fileKey, noticeListBuffer);
   }
 }

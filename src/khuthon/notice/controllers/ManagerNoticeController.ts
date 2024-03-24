@@ -15,7 +15,7 @@ export class ManagerNoticeController {
   constructor(private readonly noticeService: NoticeService) {}
 
   @Post('/manager/notices')
-  @Roles([UserRole.MANAGER])
+  // @Roles([UserRole.MANAGER])
   @Transactional()
   async createNotice(
     @Body() dto: CreateNoticeRequestDto,
