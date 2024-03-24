@@ -27,6 +27,7 @@ export class NoticeService {
     await this.noticeRepository.save(newNotice);
 
     await this.logger.log(`관리자가 새로운 공지 사항을 작성했습니다.`);
+    await this.replicateNoticeToS3(newNotice);
     await this.replicateNoticeListToS3();
 
     return newNotice;
@@ -47,6 +48,7 @@ export class NoticeService {
     await this.noticeRepository.save(notice);
 
     await this.logger.log(`관리자가 공지 사항(${noticeId})을 수정했습니다.`);
+    await this.replicateNoticeToS3(notice);
     await this.replicateNoticeListToS3();
 
     return notice;
@@ -61,7 +63,20 @@ export class NoticeService {
     await this.noticeRepository.remove(notice);
 
     await this.logger.log(`관리자가 공지 사항(${noticeId})을 삭제했습니다.`);
+    await this.deleteNoticeReplicaFromS3(noticeId);
     await this.replicateNoticeListToS3();
+  }
+
+  private async replicateNoticeToS3(notice: NoticeEntity): Promise<void> {
+    const noticeBuffer = Buffer.from(JSON.stringify(notice), 'utf8');
+
+    const fileKey = `notices/${notice.id}.json`;
+    await this.s3Adapter.uploadObject(fileKey, noticeBuffer);
+  }
+
+  private async deleteNoticeReplicaFromS3(noticeId: string): Promise<void> {
+    const fileKey = `notices/${noticeId}.json`;
+    await this.s3Adapter.deleteObject(fileKey);
   }
 
   private async replicateNoticeListToS3(): Promise<void> {
