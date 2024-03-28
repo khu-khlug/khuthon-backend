@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ulid } from 'ulid';
 
-import { MemberState } from '@khlug/constant';
+import { MAX_TEAM_MEMBER_COUNT, MemberState } from '@khlug/constant';
 import { Message } from '@khlug/constant/message';
 import { KhuthonLogger } from '@khlug/khuthon/core/log/KhuthonLogger';
 import { S3Adapter } from '@khlug/khuthon/core/s3/S3Adapter';
@@ -249,6 +249,15 @@ export class TeamService {
 
     if (member.teamId !== teamId) {
       throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_UPDATE_TEAM);
+    }
+
+    const memberCount = await this.memberRepository.countBy({ teamId });
+    const invitationCount = await this.invitationRepository.countBy({ teamId });
+
+    if (memberCount + invitationCount + 1 > MAX_TEAM_MEMBER_COUNT) {
+      throw new UnprocessableEntityException(
+        Message.TEAM_MEMBER_LIMIT_EXCEEDED,
+      );
     }
 
     const prevInvitation = await this.invitationRepository.findOneBy({

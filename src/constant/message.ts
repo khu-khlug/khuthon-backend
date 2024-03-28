@@ -49,6 +49,7 @@ export const Message = {
   MEMBER_NO_TEAM: '속한 팀이 없습니다.',
   INVALID_YEAR: '올해 대회와 다른 연도의 대회의 정보에 접근할 수 없습니다.',
   CANNOT_DELETE_MYSELF: '자기 자신을 팀에서 내보낼 수 없습니다.',
+  TEAM_MEMBER_LIMIT_EXCEEDED: '팀원 수가 초과되었습니다.',
 
   // 500 Internal Server Error
   STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',

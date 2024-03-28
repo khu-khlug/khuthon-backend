@@ -1,3 +1,5 @@
+export const MAX_TEAM_MEMBER_COUNT = 4;
+
 export const MemberState = {
   NEED_VERIFICATION: 'NEED_VERIFICATION',
   NEED_STUDENT_INFO: 'NEED_STUDENT_INFO',
