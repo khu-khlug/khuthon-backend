@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -18,6 +19,7 @@ import { CreateAttachmentRequestDto } from './dto/member/CreateAttachmentRequest
 import { CreateAttachmentResponseDto } from './dto/member/CreateAttachmentResponseDto';
 import { EditTeamRequestDto } from './dto/member/EditTeamRequestDto';
 import { EditTeamResponseDto } from './dto/member/EditTeamResponseDto';
+import { GetMyTeamResponseDto } from './dto/member/GetMyTeamResponseDto';
 import { InviteTeamMemberRequestDto } from './dto/member/InviteTeamMemberRequestDto';
 import { JoinTeamResponseDto } from './dto/member/JoinTeamResponseDto';
 import { RegisterTeamRequestDto } from './dto/member/RegisterTeamRequestDto';
@@ -27,6 +29,19 @@ import { UpdateTeamIdeaRequestDto } from './dto/member/UpdateTeamIdeaRequestDto'
 @Controller()
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
+
+  @Get('/team')
+  @Roles([UserRole.MEMBER])
+  async getMyTeam(
+    @Requester() requester: MemberUser,
+  ): Promise<GetMyTeamResponseDto> {
+    const { memberId } = requester;
+
+    const result = await this.teamService.getMyTeam(memberId);
+    const { team, members, invitations } = result;
+
+    return new GetMyTeamResponseDto(team, members, invitations);
+  }
 
   @Post('/teams')
   @Roles([UserRole.MEMBER])
