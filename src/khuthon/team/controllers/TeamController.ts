@@ -129,7 +129,7 @@ export class TeamController {
     await this.teamService.cancelInvitation(teamId, memberId, invitationId);
   }
 
-  @Delete('/teams:teamId/members/:memberId')
+  @Delete('/teams/:teamId/members/:memberId')
   @Roles([UserRole.MEMBER])
   @Transactional()
   async deleteTeamMember(
