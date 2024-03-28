@@ -164,6 +164,11 @@ export class TeamService {
       throw new ForbiddenException(Message.ONLY_MEMBERS_CAN_WITHDRAW);
     }
 
+    members.forEach((member) => {
+      member.teamId = null;
+      member.state = MemberState.NEED_TEAM;
+    });
+
     const smsTargetPhoneNumbers = members
       .map((member) => member.phone)
       .filter((phone): phone is string => !!phone);
@@ -176,6 +181,7 @@ export class TeamService {
     }
 
     await this.teamRepository.delete(team.id);
+    await this.memberRepository.save(members);
 
     await this.logger.log(`${team.name} 팀의 참가 신청이 철회되었습니다.`);
   }
