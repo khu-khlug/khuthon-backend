@@ -25,6 +25,12 @@ type EditTeamParams = {
   note: string | null;
 };
 
+type GetMyTeamResult = {
+  team: TeamEntity;
+  members: MemberEntity[];
+  invitations: InvitationEntity[];
+};
+
 @Injectable()
 export class TeamService {
   constructor(
@@ -44,6 +50,29 @@ export class TeamService {
     private readonly s3Adapter: S3Adapter,
     private readonly eventService: EventService,
   ) {}
+
+  async getMyTeam(memberId: string): Promise<GetMyTeamResult> {
+    const member = await this.memberRepository.findOneBy({ id: memberId });
+    if (!member) {
+      throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (!member.teamId) {
+      throw new UnprocessableEntityException(Message.MEMBER_NO_TEAM);
+    }
+
+    const team = await this.teamRepository.findOneBy({ id: member.teamId });
+    if (!team) {
+      throw new NotFoundException(Message.TEAM_NOT_FOUND);
+    }
+
+    const members = await this.memberRepository.findBy({ teamId: team.id });
+    const invitations = await this.invitationRepository.findBy({
+      teamId: team.id,
+    });
+
+    return { team, members, invitations };
+  }
 
   async registerTeam(memberId: string, teamName: string): Promise<TeamEntity> {
     const year = new Date().getFullYear();
@@ -364,6 +393,10 @@ export class TeamService {
     });
     if (!targetMember) {
       throw new NotFoundException(Message.MEMBER_NOT_FOUND);
+    }
+
+    if (member.id === targetMember.id) {
+      throw new UnprocessableEntityException(Message.CANNOT_DELETE_MYSELF);
     }
 
     if (targetMember.teamId !== teamId) {

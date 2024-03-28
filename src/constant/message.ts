@@ -48,6 +48,7 @@ export const Message = {
   FILE_TOO_LARGE: '파일 크기가 너무 큽니다. 10MB 이하로 업로드해주세요.',
   MEMBER_NO_TEAM: '속한 팀이 없습니다.',
   INVALID_YEAR: '올해 대회와 다른 연도의 대회의 정보에 접근할 수 없습니다.',
+  CANNOT_DELETE_MYSELF: '자기 자신을 팀에서 내보낼 수 없습니다.',
 
   // 500 Internal Server Error
   STUAUTH_REQUEST_FAILED: 'Stuauth 요청에 실패했습니다.',
